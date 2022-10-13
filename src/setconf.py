@@ -77,7 +77,7 @@ if __name__ == '__main__':
     #r = jf.writejson('d:\config.json', '/menu/popup/menuitem[0]', 'value3', 'New3', True, True)
 
     #ret = yf.readyaml('d:\config.yaml', '/autoinstall/identity', 'username')
-    yf.writeyaml('d:\config.yaml', '/autoinstall/identity', 'username', 'ubuntu3')
+    #yf.writeyaml('d:\config.yaml', '/autoinstall/identity', 'username', 'ubuntu3')
     #ret = yf.readyaml('d:\config2.yaml', 'Details', 'domain')
     #print(ret)
 
