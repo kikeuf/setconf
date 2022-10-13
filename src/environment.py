@@ -3,7 +3,9 @@ import os
 
 def setenvvar(varname, value):
    try:
-       os.environ[varname]=value
+       #os.environ[varname] = value
+       os.environ.setdefault(varname, value)
+       #os.system('export ' + varname + '=' + value)
        return True
 
    except Exception:

@@ -82,13 +82,12 @@ if __name__ == '__main__':
     #print(ret)
 
     ret = translate_args()
-    cfg.print_args()
+    #cfg.print_args()
     if not (ret is None):
         print(ret)
     else:
         #print("command : " + cfg.arg_command + " | variable : " + cfg.arg_variable + " | value : " + cfg.arg_value)
         ret = setconfig()
-
         print(ret)
 
         #yf.createyamltest()

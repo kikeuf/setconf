@@ -18,6 +18,8 @@ def translate_args():
 
     try:
 
+        helpmode = False
+
         args=[]
         argcount=len(sys.argv)
         for i, arg in enumerate(sys.argv):
@@ -92,6 +94,7 @@ def translate_args():
                 else:
                     return "error: conflicted arguments for index of list"
             elif args[a] == "-h":
+                helpmode = True
                 cfg.showhelp()
             #else:
             #    return "error: bad argument"
@@ -131,6 +134,9 @@ def translate_args():
             cfg.arg_value = env.getenvvar(cfg.arg_envvar[1:])
 
         #Détection des variables non renseignées et fichiers inexistants
+        if helpmode:
+            return ""
+
         if cfg.arg_section_path == "" and cfg.arg_filetype != "conf" and cfg.arg_filetype != "text":
             return "error: section or path is not specified"
 
