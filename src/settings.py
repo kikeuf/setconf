@@ -38,7 +38,7 @@ def removeblanklines(filename):
         writer.truncate()
 
 def showhelp():
-    print("setconf [-r][-w] [-e environment_variable] [-t type_of_file] -f filename [-p path_of_variable] [–v variable] [-d value] [-i index] [-h]")
+    print("setconf [-r][-w] [-e environment_variable] [-t type_of_file] -f filename [-p path_of_variable] [–v variable] [-d value] [-n] [-h]")
     print("")
     print("   -r        Lecture dans le fichier de configuration. La valeur lue sera écrite dans la variable d’environnement")
     print("             spécifiée avec le commutateur - e ou par défaut dans la variable d’environnement « SETCONF_ENV ».")
