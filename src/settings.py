@@ -45,7 +45,7 @@ def showhelp():
     print("")
     print("   -w        Ecrit ou remplace la valeur relative à une variable dans le fichier de configuration.")
     print("")
-    print("   -e env    Nom de la variable d’environnement pour le retour de lecture.'")
+    print("   -e env    Nom de la variable d’environnement pour le retour de lecture.")
     print("             Si non renseigné la variable d’environnement par défaut « SETCONF_ENV » sera utilisée.")
     print("")
     print("   -t type   Type de fichier de configuration dont les valeurs possibles sont « yaml », « conf », « xml », « json » ou « text ».")
