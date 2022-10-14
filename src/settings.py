@@ -73,7 +73,7 @@ def showhelp():
  #   print("             L’index ne fonctionne pour l’instant qu’avec le type de fichier « xml ».")
  #   print("")
     print("   -n        Créer une nouvelle balise, portant le nom de la variable, même si une balise de même non existe déjà.")
-    print("             Cet argument est ignoré dans le cas d’un type de fichier « text » et « conf ».")
+    print("             Cet argument est ignoré dans le cas de type de fichier « text » et « conf ».")
     print("")
     print("   -h        Affiche l'aide.")
     print("")
