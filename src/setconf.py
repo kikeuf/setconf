@@ -31,11 +31,12 @@ def setconfig():
             env.setenvvar(cfg.arg_envvar, value)
             return value
         elif cfg.arg_filetype == 'xml':
-            value = xf.readxml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_listindex)
+            #value = xf.readxml_sav(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_listindex)
+            value = xf.readxml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
             env.setenvvar(cfg.arg_envvar, value)
             return value
         elif cfg.arg_filetype == 'json':
-            value = jf.readjson(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_listindex)
+            value = jf.readjson(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
             env.setenvvar(cfg.arg_envvar, value)
             return value
         else:
@@ -45,13 +46,14 @@ def setconfig():
             ret = cf.writeconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value)
             return ret
         elif cfg.arg_filetype == 'yaml':
-            ret = yf.writeyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value)
+            ret = yf.writeyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag)
             return ret
         elif cfg.arg_filetype == 'xml':
-            ret = xf.writexml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_listindex)
+            #ret = xf.writexml_sav(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_listindex)
+            ret = xf.writexml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag)
             return ret
         elif cfg.arg_filetype == 'json':
-            ret = jf.writejson(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_listindex)
+            ret = jf.writejson(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag)
             return ret
         elif cfg.arg_filetype == 'text':
             ret = cf.writetext(cfg.arg_conffile, cfg.arg_value)
@@ -89,6 +91,7 @@ if __name__ == '__main__':
         #print("command : " + cfg.arg_command + " | variable : " + cfg.arg_variable + " | value : " + cfg.arg_value)
         ret = setconfig()
         print(ret)
+
 
         #yf.createyamltest()
 

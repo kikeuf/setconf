@@ -39,6 +39,10 @@ def translate_args():
                     cfg.arg_command = "write"
                 else:
                     return "error: conflicted arguments between read and write mode"
+
+            elif args[a]=="-n": #new tag
+                cfg.arg_newtag = True
+
             #elif args[a]=="-c": #change
             #    if cfg.arg_command == "":
             #        cfg.arg_command = "replace"
@@ -87,12 +91,12 @@ def translate_args():
                     cfg.arg_envvar = args[a]
                 else:
                     return "error: conflicted arguments for environment variable name"
-            elif args[a] == "-i": #index de liste
-                if cfg.arg_listindex == -9999:
-                    a = a + 1
-                    cfg.arg_listindex = args[a]
-                else:
-                    return "error: conflicted arguments for index of list"
+            #elif args[a] == "-i": #index de liste
+            #    if cfg.arg_listindex == -9999:
+            #        a = a + 1
+            #        cfg.arg_listindex = args[a]
+            #    else:
+            #        return "error: conflicted arguments for index of list"
             elif args[a] == "-h":
                 helpmode = True
                 cfg.showhelp()
@@ -124,8 +128,8 @@ def translate_args():
         if cfg.arg_envvar == "":
             cfg.arg_envvar = cfg.default_env
 
-        if cfg.arg_listindex == -9999:
-            cfg.arg_listindex = cfg.default_listindex
+        #if cfg.arg_listindex == -9999:
+        #    cfg.arg_listindex = cfg.default_listindex
 
         # Translate code to text
         if cfg.arg_value == "$":

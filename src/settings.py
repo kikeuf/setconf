@@ -16,9 +16,10 @@ arg_section_path = ""  # Section name or XML path or json path (without variable
 arg_variable = ""  # Name of the variable
 arg_value = ""  # value relative to the variable
 arg_envvar = "" # name of environment variable to use
-arg_listindex=-9999 #Index of the item to read or write in a list
+arg_newtag = False #Add new tag in XML, Json or yaml even if tag already exists (list)
+#arg_listindex=-9999 #Index of the item to read or write in a list
 default_env = "SETCONF_ENV"
-default_listindex = 1
+#default_listindex = 1
 
 def print_args():
     print("command : " + arg_command)
@@ -45,7 +46,7 @@ def showhelp():
     print("   -w        Ecrit ou remplace la valeur relative à une variable dans le fichier de configuration.")
     print("")
     print("   -e env    Nom de la variable d’environnement pour le retour de lecture.'")
-    print("            Si non renseigné la variable d’environnement par défaut « SETCONF_ENV » sera utilisée.")
+    print("             Si non renseigné la variable d’environnement par défaut « SETCONF_ENV » sera utilisée.")
     print("")
     print("   -t type   Type de fichier de configuration dont les valeurs possibles sont « yaml », « conf », « xml », « json » ou « text ».")
     print("             Si non renseigné le format « conf » sera appliqué par défaut.")
@@ -53,8 +54,9 @@ def showhelp():
     print("")
     print("   -f file   Chemin complet du fichier de configuration à lire ou éditer.")
     print("")
-    print("   -p path   Chemin d’accès à la variable qui représente la section ou le chemin XML ou json complet.")
-    print("             Ce chemin est ignoré dans le cas d’un type de fichier « text ».")
+    print("   -p path   Chemin d’accès à la variable qui représente la section pour un fichier de type « conf » ")
+    print("             ou le chemin au format XPath pour un fichier de type « xml », « json » ou « yaml ».")
+    print("             Cet argument est ignoré dans le cas d’un type de fichier « text ».")
     print("")
     print("   -v var    Nom de la variable. Le commutateur -v est facultatif si le nom de la variable est placé en ")
     print("             avant-dernière position juste devant la valeur, ou en dernière position si la valeur n’est pas requise (lecture).")
@@ -65,10 +67,12 @@ def showhelp():
     print("             d’environnement en préfixant le nom de la variable d’environnement par le symbole « $ », par exemple « $MY_VAR ».")
     print("             Le symbole « $ » seul est un raccourci vers la variable par défaut « $SETCONF_ENV ».")
     print("")
-    print("   -i index  Dans le cas de listes (variable répétée dans une section), l’index est le numéro de la variable à lire ou à écrire.")
-    print("             Utiliser l’index « 0 » pour lire ou écrire l’ensemble des valeurs de cette liste.")
-    print("             Utiliser l’index « -1 » pour ajouter un élément à la liste (écriture).")
-    print("             L’index ne fonctionne pour l’instant qu’avec le type de fichier « xml ».")
+ #   print("   -i index  Dans le cas de listes (variable répétée dans une section), l’index est le numéro de la variable à lire ou à écrire.")
+ #   print("             Utiliser l’index « 0 » pour lire ou écrire l’ensemble des valeurs de cette liste.")
+ #   print("             Utiliser l’index « -1 » pour ajouter un élément à la liste (écriture).")
+ #   print("             L’index ne fonctionne pour l’instant qu’avec le type de fichier « xml ».")
+ #   print("")
+    print("   -n        Créer une nouvelle balise, portant le nom de la variable, même si une balise de même non existe déjà.")
     print("")
     print("   -h        Affiche l'aide.")
     print("")
