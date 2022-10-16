@@ -1,4 +1,6 @@
 
+import os
+from conffile import writeconf, readconf
 
     # montage variable commune déjà existantes en public
     #global arg_command
@@ -19,6 +21,8 @@ arg_envvar = "" # name of environment variable to use
 arg_newtag = False #Add new tag in XML, Json or yaml even if tag already exists (list)
 #arg_listindex=-9999 #Index of the item to read or write in a list
 default_env = "SETCONF_ENV"
+env_file = "env.conf"
+env_section = "environment_variables"
 #default_listindex = 1
 
 def print_args():
@@ -36,6 +40,59 @@ def removeblanklines(filename):
             if line.strip():
                 writer.write(line)
         writer.truncate()
+
+def create_env_file():
+    if env_section == "":
+        writefile(env_file, '', True)
+    else:
+        writefile(env_file, '[' + env_section + ']', True)
+
+def write_env_file(env_name, value):
+
+    if not os.path.exists(env_file):
+        create_env_file()
+
+    return writeconf(env_file, env_section, env_name, value)
+
+def read_env_file(env_name):
+    return readconf(env_file, env_section, env_name)
+
+def writefile(filename, text, erase_before=False):
+
+    try:
+
+        if erase_before:
+            deletefile(filename)
+
+        f = open(filename, 'w')
+        # Writing a string to file
+        f.write(text)
+        f.close()
+
+        return True
+
+    except:
+        return False
+
+def deletefile(filename):
+
+    try:
+        os.remove(filename)
+        return True
+
+    except:
+        return False
+
+def readfile(filename):
+
+    try:
+        f = open(filename, 'r')
+        ret = f.readline()
+        return ret
+
+    except:
+        return ""
+
 
 def showhelp():
     print("setconf [-r][-w] [-e environment_variable] [-t type_of_file] -f filename [-p path_of_variable] [–v variable] [-d value] [-n] [-h]")

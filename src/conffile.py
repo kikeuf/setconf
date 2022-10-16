@@ -1,11 +1,14 @@
 from configparser import ConfigParser
 
 # Get the configparser object
-config_object = ConfigParser()
+#config_object = ConfigParser()
 dummy_section = "dummy_top_for_no_section_values_xxx"
 
 
 def createinitest():
+
+    config_object = ConfigParser()
+
     # Assume we need 2 sections in the config file, let's call them USERINFO and SERVERCONFIG
     config_object["USERINFO"] = {
         "admin": "Chankey Pathak",
@@ -27,6 +30,8 @@ def createinitest():
 def readconf(filename, section, variable):
     try:
 
+        config_object = ConfigParser()
+
         if section == "":
             section = dummy_section
             with open(filename) as stream:
@@ -47,6 +52,8 @@ def readconf(filename, section, variable):
 def writeconf(filename, section, variable, value):
     try:
 
+        config_object = ConfigParser()
+
         if section == "":
             section = dummy_section
             with open(filename) as stream:
@@ -55,11 +62,16 @@ def writeconf(filename, section, variable, value):
             # copy config file to object
             config_object.read(filename)
 
-        # select the object section
-        section_object = config_object[section]
+        if not config_object.has_section(section):
+            config_object.add_section(section)
+
+        config_object.set(section, variable, value)
+
+         # select the object section
+        #section_object = config_object[section]
 
         # Update the variable with the new value
-        section_object[variable] = value
+        #section_object[variable] = value
 
         # Write changes back to file
         with open(filename, 'w') as conf:

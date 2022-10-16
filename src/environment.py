@@ -1,6 +1,9 @@
 
 import os
 from sys import platform
+from settings import write_env_file, read_env_file
+
+
 
 def setenvvar(varname, value):
    try:
@@ -15,7 +18,8 @@ def setenvvar(varname, value):
         #rvalue = os.environ.get(varname)
         #print('check: $' + varname + '=' + rvalue)
 
-        writefile(varname, value)
+        #cfg.writefile(varname, value, True)
+        write_env_file(varname, value)
         return True
 
    except Exception as e:
@@ -25,8 +29,9 @@ def getenvvar(varname):
     try:
         #value=os.environ[varname]
         value = os.environ.get(varname)
-        if value == "":
-            value = readfile(varname)
+        if value == None:
+            #value = cfg.readfile(varname)
+            value = read_env_file(varname)
         return value
 
     except Exception:
@@ -41,38 +46,3 @@ def envvarexists(varname):
 
     except Exception:
         return False
-
-def writefile(filename, text, erase_before = False):
-
-    try:
-
-        if erase_before:
-            deletefile(filename)
-
-        f = open(filename, 'w')
-        # Writing a string to file
-        f.write(text)
-        f.close()
-
-        return True
-
-    except:
-        return False
-
-def deletefile(filename):
-    try:
-        os.remove(filename)
-        return True
-
-    except:
-        return False
-
-def readfile(filename):
-
-    try:
-        f = open(filename, 'r')
-        ret = f.readline()
-        return ret
-
-    except:
-        return ""

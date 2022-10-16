@@ -5,6 +5,7 @@ import environment as env
 # from settings import *
 import settings as cfg
 
+data = ""
 
 def translate_args():
     #-w - t yaml - f "d:\tutswiki.yaml" - p Details2 "domain2" "www.toto.org"
@@ -16,17 +17,19 @@ def translate_args():
     #global arg_value
     #global default_env
 
+    global data
+
     try:
 
         helpmode = False
 
-        args=[]
+        args = []
         argcount=len(sys.argv)
         for i, arg in enumerate(sys.argv):
             args.append(arg)
 
-        a=1
-        while a<argcount:
+        a = 1
+        while a < argcount:
             #print(a)
 
             if args[a]=="-r": #read
@@ -52,14 +55,16 @@ def translate_args():
                 if cfg.arg_filetype == "":
                     a = a + 1
                     cfg.arg_filetype = args[a].lower()
-                    if cfg.arg_filetype!="json" and cfg.arg_filetype!="xml" and cfg.arg_filetype!="conf" and cfg.arg_filetype!="yaml" and cfg.arg_filetype!="text":
+                    if cfg.arg_filetype != "json" and cfg.arg_filetype != "xml" and cfg.arg_filetype != "conf" and cfg.arg_filetype != "yaml" and cfg.arg_filetype != "text":
                         return "error: unknown file type"
                 else:
                     return "error: conflicted arguments for file type"
             elif args[a] == "-f": #filename
                 if cfg.arg_conffile == "":
                     a = a + 1
-                    cfg.arg_conffile = args[a]
+                    data = args[a]
+                    a = argument_workaround(args, a, argcount)
+                    cfg.arg_conffile = data
                     if cfg.arg_conffile == "":
                         return "error: configuration file not specified"
                 else:
@@ -67,7 +72,9 @@ def translate_args():
             elif args[a] == "-p": #path or section
                 if cfg.arg_section_path == "":
                     a = a + 1
-                    cfg.arg_section_path = args[a]
+                    data = args[a]
+                    a = argument_workaround(args, a, argcount)
+                    cfg.arg_section_path = data
                     #pas d'erreur car il peut être vide
                     #if cfg.arg_section_path == "":
                     #    return "error: path of the variable not specified"
@@ -76,13 +83,17 @@ def translate_args():
             elif args[a] == "-v": #variable
                 if cfg.arg_variable == "":
                     a = a + 1
-                    cfg.arg_variable = args[a]
+                    data = args[a]
+                    a = argument_workaround(args, a, argcount)
+                    cfg.arg_variable = data
                 else:
                     return "error: conflicted arguments for variable name"
             elif args[a] == "-d": #data
                 if cfg.arg_value == "":
                     a = a + 1
-                    cfg.arg_value = args[a]
+                    data = args[a]
+                    a = argument_workaround(args, a, argcount)
+                    cfg.arg_value = data
                 else:
                     return "error: conflicted arguments for value"
             elif args[a] == "-e": #environment variable
@@ -105,14 +116,14 @@ def translate_args():
             a = a + 1
 
 
-        if cfg.arg_command=="write":
-            if cfg.arg_value == "":
-                cfg.arg_value = args[argcount-1]
-            if cfg.arg_variable == "":
-                cfg.arg_variable = args[argcount-2]
-        elif cfg.arg_command == "read":
-            if cfg.arg_variable == "":
-                cfg.arg_variable = args[argcount-1]
+        #if cfg.arg_command=="write":
+        #    if cfg.arg_value == "":
+        #        cfg.arg_value = args[argcount-1]
+        #    if cfg.arg_variable == "":
+        #        cfg.arg_variable = args[argcount-2]
+        #elif cfg.arg_command == "read":
+        #    if cfg.arg_variable == "":
+        #        cfg.arg_variable = args[argcount-1]
         #else:
         #    cfg.arg_value = args[argcount-1]
 
@@ -162,3 +173,27 @@ def translate_args():
         else:
             msg = str(ex)
         return "error: " + msg
+
+def argument_workaround(arg_list, a, max):
+
+    # contournement de bug de lecture des arguments sous linux quand ils comprennent des espaces
+
+    global data
+
+    exit_loop = False
+    i = a
+    while not exit_loop:
+        i = i + 1
+        if i < max:
+            ch1 = arg_list[i][0]
+            if ch1 == "-":
+                exit_loop = True
+                i = i - 1
+            else:
+                data = data + ' ' + arg_list[i]
+        else:
+            exit_loop = True
+            i = i - 1
+    return i
+
+
