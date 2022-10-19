@@ -1,8 +1,8 @@
 import json
 
-from dictpath_main import get_dict_item, update_dict_element, write_new_dict_element, convertXpathToDictPath, \
-    convertXpathToDictVariable
+from dictpath_main import get_dict_item, update_dict_element, write_new_dict_element, convertXpathToDictPath, convertXpathToDictVariable
 from dictpath_utils import validate_dict_path
+#from settings import readfilecontent
 
 
 #https://github.com/StephenDiscenza/jsonpath-lite-for-python
@@ -63,13 +63,28 @@ def readjson(filename, path, variable):
 
 def writejson(filename, path, variable, value, new_element=False, new_array_field=False):
 
-    with open(filename, 'r') as f:
-        DATA = json.load(f)
-
     #path = '/menu/popup/menuitem[value="Open"].onclick'
     fullpath = convertXpathToDictPath(path + '/' + variable)
     parentpath = convertXpathToDictPath(path)
     arrayvar = convertXpathToDictVariable(variable, value)
+
+    #ct = readfilecontent(filename)
+    #ct = '''
+    #{
+    #"Transaction_1": {"Name":"Magnolia","Location":"Ayilon male","Amount":289,"Date":"5/5/18"},
+    #"Transaction_2": {"Name":"Landver","Location":"Cinima-city Ramat-hashron","Amount":15,"Date":"15/5/18"},
+    #"Transaction_3": {"Name":"Superfarm","Location":"Shivat-hacochvim male","Amount":199,"Date":"7/5/18"},
+    #"Transaction_4": {"Name":"Printing solutions","Location":"Afeka tel-aviv","Amount":16,"Date":"25/5/18"}
+    #}'''
+    #print(ct)
+
+    #DATA = json.loads(ct)
+    #print(DATA)
+    with open(filename, 'r') as f:
+        DATA = json.load(f)
+
+    print(fullpath)
+
 
     #print(path)
     #path = '$.menu.popup.menuitem[?value="Open"].onclick'
@@ -88,7 +103,6 @@ def writejson(filename, path, variable, value, new_element=False, new_array_fiel
         json.dump(DATA, jsonfile, indent=2)
 
     return ret
-
 
 def createjsontest():
     article_info = {"menu": {

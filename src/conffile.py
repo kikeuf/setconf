@@ -1,5 +1,6 @@
 from configparser import ConfigParser
 
+# https://coderzcolumn.com/tutorials/python/configparser-simple-guide-to-create-and-parse-configuration-files
 # Get the configparser object
 #config_object = ConfigParser()
 dummy_section = "dummy_top_for_no_section_values_xxx"
@@ -108,6 +109,7 @@ def remove_first_line_of_file(filename):
 
 
 def writetext(filename, text):
+
     try:
 
         by = read_lastbyteoffile(filename)
@@ -124,6 +126,7 @@ def writetext(filename, text):
 
 
 def read_lastbyteoffile(filename):
+
     with open(filename, 'rb') as ifile:
         buffer = ifile.read()
         lby = len(buffer) - 1

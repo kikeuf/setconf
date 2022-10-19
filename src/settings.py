@@ -93,6 +93,17 @@ def readfile(filename):
     except:
         return ""
 
+import os
+
+def readfilecontent(filename):
+
+    data = ""
+    if os.path.isfile(filename):
+        file = open(filename, "r")
+        data = str(file.read())
+        file.close()
+
+    return data
 
 def showhelp():
     print("setconf [-r][-w] [-e environment_variable] [-t type_of_file] -f filename [-p path_of_variable] [–v variable] [-d value] [-n] [-h]")
