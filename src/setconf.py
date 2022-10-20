@@ -24,26 +24,26 @@ def setconfig():
     if cfg.arg_command == 'read':
         if cfg.arg_filetype == 'conf':
             value = cf.readconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
-            env.setenvvar(cfg.arg_envvar, value)
+            #env.setenvvar(cfg.arg_envvar, value)
             return value
         elif cfg.arg_filetype == 'yaml':
             value = yf.readyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
-            env.setenvvar(cfg.arg_envvar, value)
+            #env.setenvvar(cfg.arg_envvar, value)
             return value
         elif cfg.arg_filetype == 'xml':
             #value = xf.readxml_sav(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_listindex)
             value = xf.readxml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
-            env.setenvvar(cfg.arg_envvar, value)
+            #env.setenvvar(cfg.arg_envvar, value)
             return value
         elif cfg.arg_filetype == 'json':
             value = jf.readjson(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
-            env.setenvvar(cfg.arg_envvar, value)
+            #env.setenvvar(cfg.arg_envvar, value)
             return value
         else:
             return
     elif cfg.arg_command == 'write':
         if cfg.arg_filetype == 'conf':
-            ret = cf.writeconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value)
+            ret = cf.writeconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_delimiters, cfg.arg_space_around_delimiters)
             return ret
         elif cfg.arg_filetype == 'yaml':
             ret = yf.writeyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag)

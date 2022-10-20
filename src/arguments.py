@@ -96,12 +96,12 @@ def translate_args():
                     cfg.arg_value = data
                 else:
                     return "error: conflicted arguments for value"
-            elif args[a] == "-e": #environment variable
-                if cfg.arg_envvar == "":
-                    a = a + 1
-                    cfg.arg_envvar = args[a]
-                else:
-                    return "error: conflicted arguments for environment variable name"
+            #elif args[a] == "-e": #environment variable
+            #    if cfg.arg_envvar == "":
+            #        a = a + 1
+            #        cfg.arg_envvar = args[a]
+            #    else:
+            #        return "error: conflicted arguments for environment variable name"
             #elif args[a] == "-i": #index de liste
             #    if cfg.arg_listindex == -9999:
             #        a = a + 1
@@ -111,6 +111,13 @@ def translate_args():
             elif args[a] == "-h":
                 helpmode = True
                 cfg.showhelp()
+            elif args[a] == "-l":
+                a = a + 1
+                if args[a] != "":
+                    cfg.arg_delimiters = args[a]
+
+            elif args[a] == "-nospace":
+                cfg.arg_space_around_delimiters = False
             #else:
             #    return "error: bad argument"
             a = a + 1
@@ -136,17 +143,17 @@ def translate_args():
         if cfg.arg_filetype == "":
             cfg.arg_filetype = "conf"
 
-        if cfg.arg_envvar == "":
-            cfg.arg_envvar = cfg.default_env
+        #if cfg.arg_envvar == "":
+        #    cfg.arg_envvar = cfg.default_env
 
         #if cfg.arg_listindex == -9999:
         #    cfg.arg_listindex = cfg.default_listindex
 
         # Translate code to text
         if cfg.arg_value == "$":
-            cfg.arg_value = env.getenvvar(cfg.arg_envvar)
+            cfg.arg_value = env.getenvvar(default_env)
         elif cfg.arg_value[0:1] == "$":
-            cfg.arg_value = env.getenvvar(cfg.arg_envvar[1:])
+            cfg.arg_value = env.getenvvar(cfg.arg_value[1:])
 
         #Détection des variables non renseignées et fichiers inexistants
         if helpmode:
@@ -158,8 +165,8 @@ def translate_args():
         if cfg.arg_variable == "" and cfg.arg_filetype != "text":
             return "error: variable name is not specified"
 
-        if cfg.arg_value == "" and cfg.arg_command == "write":
-            return "error: value is not specified"
+        #if cfg.arg_value == "" and cfg.arg_command == "write":
+        #    return "error: value is not specified"
 
         if cfg.arg_conffile == "":
             return "error: configuration file is not specified"

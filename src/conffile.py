@@ -28,10 +28,10 @@ def createinitest():
         config_object.write(conf)
 
 
-def readconf(filename, section, variable):
+def readconf(filename, section, variable, delimiters_list="=,:"):
     try:
 
-        config_object = ConfigParser()
+        config_object = ConfigParser(allow_no_value=True, delimiters=delimiters_list)
 
         if section == "":
             section = dummy_section
@@ -50,10 +50,13 @@ def readconf(filename, section, variable):
         return ""
 
 
-def writeconf(filename, section, variable, value):
+def writeconf(filename, section, variable, value, delimiters_list="=,:", delimiter_spaces=True):
     try:
 
-        config_object = ConfigParser()
+        #read_section(filename, section)
+
+        config_object = ConfigParser(allow_no_value=True, delimiters=delimiters_list)
+        #parser = configparser.ConfigParser(delimiters=('?', '*'))
 
         if section == "":
             section = dummy_section
@@ -76,7 +79,7 @@ def writeconf(filename, section, variable, value):
 
         # Write changes back to file
         with open(filename, 'w') as conf:
-            config_object.write(conf)
+            config_object.write(conf, space_around_delimiters=delimiter_spaces)
 
         if section == dummy_section:
             return remove_first_line_of_file(filename)
@@ -86,6 +89,24 @@ def writeconf(filename, section, variable, value):
     except Exception:
         return False
 
+
+def read_section(filename, section, delimiters_list="=,:"):
+
+    config_object = ConfigParser(allow_no_value=True, delimiters=delimiters_list)
+
+    if section == "":
+        section = dummy_section
+        with open(filename) as stream:
+            config_object.read_string("[" + section + "]\n" + stream.read())  # This line does the trick.
+    else:
+        # copy config file to object
+        config_object.read(filename)
+
+    section_object = config_object[section]
+    for it in section_object:
+        print(it)
+
+    #value = section_object[variable]
 
 def remove_first_line_of_file(filename):
     try:
