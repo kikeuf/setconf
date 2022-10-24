@@ -133,13 +133,10 @@ def writetext(filename, text, newtag=False):
     try:
 
         if newtag:
-            print("newtag")
             allow_writing = True
         elif file_contains_line(filename, text):
-            print("contains")
             allow_writing = False
         else:
-            print("else")
             allow_writing = True
 
         if allow_writing:
