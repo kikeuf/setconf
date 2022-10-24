@@ -1,4 +1,3 @@
-import settings as cfg
 from configparser import ConfigParser
 # https://coderzcolumn.com/tutorials/python/configparser-simple-guide-to-create-and-parse-configuration-files
 # Get the configparser object
@@ -129,11 +128,11 @@ def remove_first_line_of_file(filename):
         return False
 
 
-def writetext(filename, text):
+def writetext(filename, text, newtag=False):
 
     try:
 
-        if cfg.arg_newtag:
+        if newtag:
             allow_writing = True
         elif file_contains_line(filename, text):
             allow_writing = False

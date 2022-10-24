@@ -57,7 +57,7 @@ def setconfig():
             ret = jf.writejson(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag)
             return ret
         elif cfg.arg_filetype == 'text':
-            ret = cf.writetext(cfg.arg_conffile, cfg.arg_value)
+            ret = cf.writetext(cfg.arg_conffile, cfg.arg_value, cfg.arg_newtag)
             return ret
         else:
             return
