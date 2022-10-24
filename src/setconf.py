@@ -9,6 +9,7 @@ import settings as cfg
 import xmlfile as xf
 import yamlfile as yf
 from arguments import translate_args
+from dict import testdict
 
 
 #def print_hi(name):
@@ -82,6 +83,8 @@ if __name__ == '__main__':
     #yf.writeyaml('d:\config.yaml', '/autoinstall/identity', 'username', 'ubuntu3')
     #ret = yf.readyaml('d:\config2.yaml', 'Details', 'domain')
     #print(ret)
+
+    #testdict()
 
 
     ret = translate_args()

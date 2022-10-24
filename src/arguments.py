@@ -59,6 +59,14 @@ def translate_args():
                         return "error: unknown file type"
                 else:
                     return "error: conflicted arguments for file type"
+            elif args[a] == "-a": #action
+                if cfg.arg_action == "":
+                    a = a + 1
+                    cfg.arg_action = args[a].lower()
+                    if cfg.arg_action != "update" and cfg.arg_action != "append" and cfg.arg_action != "remove":
+                        return "error: unknown action"
+                else:
+                    return "error: conflicted arguments for action"
             elif args[a] == "-f": #filename
                 if cfg.arg_conffile == "":
                     a = a + 1
@@ -80,7 +88,7 @@ def translate_args():
                     #    return "error: path of the variable not specified"
                 else:
                     return "error: conflicted arguments for configuration file"
-            elif args[a] == "-v": #variable
+            elif args[a] == "-k": #key (variable)
                 if cfg.arg_variable == "":
                     a = a + 1
                     data = args[a]
@@ -88,7 +96,7 @@ def translate_args():
                     cfg.arg_variable = data
                 else:
                     return "error: conflicted arguments for variable name"
-            elif args[a] == "-d": #data
+            elif args[a] == "-v": #value
                 if cfg.arg_value == "":
                     a = a + 1
                     data = args[a]
@@ -143,6 +151,9 @@ def translate_args():
         if cfg.arg_filetype == "":
             cfg.arg_filetype = "conf"
 
+        if cfg.arg_action == "":
+            cfg.arg_action = "update"
+
         #if cfg.arg_envvar == "":
         #    cfg.arg_envvar = cfg.default_env
 
@@ -154,6 +165,9 @@ def translate_args():
             cfg.arg_value = env.getenvvar(default_env)
         elif cfg.arg_value[0:1] == "$":
             cfg.arg_value = env.getenvvar(cfg.arg_value[1:])
+
+        if cfg.arg_conffile[0:1] == "$":
+            cfg.arg_conffile = env.getenvvar(cfg.arg_conffile[1:])
 
         #Détection des variables non renseignées et fichiers inexistants
         if helpmode:

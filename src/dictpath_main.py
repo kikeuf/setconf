@@ -1,7 +1,7 @@
 import re
 
 from dictpath_utils import handle_search_dict_exceptions
-
+from dict import formatNumberOrText
 
 def search_dict(dictDocument, pathItems: list):
     '''
@@ -73,8 +73,11 @@ def update_dict_element(dictDocument, path: str, value):
     except Exception as e:
         raise handle_search_dict_exceptions(path, e, 'Update')
     # This is really an upsert
-    containingDict[pathItems[-1]] = value
-
+    #if isnumber(value):
+    #    containingDict[pathItems[-1]] = int(value)
+    #else:
+    #    containingDict[pathItems[-1]] = value
+    containingDict[pathItems[-1]] = formatNumberOrText(value)
 
 def write_new_dict_element(dictDocument, path: str, value, newElementName=None):
     '''
@@ -89,7 +92,7 @@ def write_new_dict_element(dictDocument, path: str, value, newElementName=None):
     if isinstance(insertLocation, list):
         insertLocation.append(value)
     else:
-        insertLocation[newElementName] = value
+        insertLocation[newElementName] = formatNumberOrText(value)
 
 
 def convertXpathToDictPath(path):
@@ -103,3 +106,4 @@ def convertXpathToDictVariable(variable, value):
     text = '{"' + variable + '": "' + value + '"}'
 
     return text
+

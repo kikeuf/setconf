@@ -43,6 +43,6 @@ def handle_search_dict_exceptions(path: str, e: Exception, callingFunc: str) -> 
     if not pathIsValid:
         errorString = ', '.join(pathErrors)
         return DictPathValidationError(
-            f'Syntax errors were found in the following parts of the supplied JSON path: {errorString}')
+            f'Syntax errors were found in the following parts of the supplied source path: {errorString}')
     return DictSearchError(
-        f'{callingFunc} failed because an unexpected error occured in search_json. The path was: {path} and the error is: {repr(e)}')
+        f'{callingFunc} failed because an unexpected error occured in search_dict. The path was: {path} and the error is: {repr(e)}')

@@ -13,6 +13,7 @@ from conffile import writeconf, readconf
 
 arg_command = ""  # read, write
 arg_filetype = ""  # type of file "conf","json","yaml","xml", "text"
+arg_action = "" #action to realize with the variable and its value, "update", "append", "remove"
 arg_conffile = ""  # full file name of the config file
 arg_section_path = ""  # Section name or XML path or json path (without variable name)
 arg_variable = ""  # Name of the variable
@@ -21,8 +22,10 @@ arg_value = ""  # value relative to the variable
 arg_newtag = False  #Add new tag in XML, Json or yaml even if tag already exists (list)
 arg_delimiters = "=,:"  #Change delimiters for conf files
 arg_space_around_delimiters = True #Add space before and after the delimiter in conf files
+
 #arg_listindex=-9999 #Index of the item to read or write in a list
 default_env = "SETCONF_ENV"
+
 #env_file = "env.conf"
 #env_section = "environment_variables"
 #default_listindex = 1
@@ -110,40 +113,53 @@ def readfilecontent(filename):
 
     return data
 
+def isnumber(value):
+    try:
+        ret = int(value)
+        return True
+    except:
+        return False
+
 def showhelp():
     print("setconf [-r][-w] [-t type_of_file] -f filename [-p path_of_variable] [–v variable] [-d value] [-l list_of_delimiters] [-nospace] [-n] [-h]")
     print("")
-    print("   -r        Read inside the configuration file.")
+    print("  -r         Read inside the configuration file.")
     print("")
-    print("   -w        Update or write the value corresponding to a variable in the configuration file.")
+    print("  -w         Update, write or remove the value corresponding to a variable in the configuration file.")
     print("")
-    print("   -t type   Type of configuration file whose parameters can be « yaml », « conf », « xml », « json » or « text ».")
+    print("  -a action  Action to realize when writing the variable and its value. Actions defined by the following keywords : ")
+    print("                - « update » changes the value of an existing variable; or replace a list by the specified value. Create the variable if it doesn't exists.")
+    print("                - « append » appends the value at the end of a list. If necessary, converts the variable to a list.")
+    print("                - « remove » delete the variable and its values.")
+    print("             This argument is used only for « yaml » file type. The default action is « update ».")
+    print("")
+    print("  -t type    Type of configuration file whose parameters can be « yaml », « conf », « xml », « json » or « text ».")
     print("             If not filled, the default type will be « conf ».")
     print("             The type « text », only available on writing, add the text specified in the value at the end of the file.")
     print("")
-    print("   -f file   Full path of the configuration file to be edited ou read.")
+    print("  -f file    Full path of the configuration file to be edited ou read.")
     print("")
-    print("   -p path   Path to the variable formatted in XPath for files types « xml », « json », « yaml »")
+    print("  -p path    Path to the variable formatted in XPath for files types « xml », « json », « yaml »")
     print("             or section name for a « conf » file type.")
     print("             This argument will be ignored in case of « text » file type.")
     print("")
-    print("   -v var    Name of the variable or name of the tag.")
+    print("  -k var     Name of the variable or name of the tag.")
     print("             This argument will be ignored in case of « text » file type.")
     print("")
-    print("   -d value  Value corresponding to a variable or text to insert for « text » file type.")
+    print("  -v value   Value corresponding to a variable or text to insert for « text » file type.")
     print("             This Value can point to a environment variable by prefixing it with the symbol « $ », for example « $MY_VAR ».")
     print("             This argument will be ignored in reading mode.")
     print("")
-    print("   -l delim   Define delimiters between variables and values for « conf » file type.")
-    print("              By default, delimiters are « =,: ».")
+    print("  -l delim   Define delimiters between variables and values for « conf » file type.")
+    print("             By default, delimiters are « =,: ».")
     print("")
-    print("   -nospace  remove spaces before and after the delimiter for « conf » file type.")
+    print("  -nospace   Remove spaces before and after the delimiter for « conf » file type.")
     print("             For example, 'myvar = myvalue' would become 'my_var=my_value'.")
     print("")
-    print("   -n        Create a new tag named as the variable, even if a tag with the same name already exists.")
+    print("  -n         Create a new tag named as the variable, even if a tag with the same name already exists.")
     print("             This argument will be ignored in case of « text » or « conf » file types.")
     print("")
-    print("   -h        Show help.")
+    print("  -h         Show help.")
     print("")
 
 def showhelp_fr():

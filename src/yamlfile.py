@@ -22,7 +22,7 @@ from dictpath_main import get_dict_item, update_dict_element, write_new_dict_ele
     convertXpathToDictVariable
 from dictpath_utils import validate_dict_path
 from settings import removeblanklines
-from dict import getnodeValuebyXPath, getnodeObjectbyXPath
+from dict import getnodeValuebyXPath, getnodeObjectbyXPath, setnodeValuebyXPath
 
 
 #from pathlib import Path
@@ -129,35 +129,38 @@ def writeyaml_x(filename, path, variable, value, new_element=False, new_array_fi
     return ret
 def writeyaml(filename, path, variable, value, new_element=False, new_array_field=False):
 
+    method = 2
+
     #yml = yaml.YAML()
     #yml.preserve_quotes = True
     #DATA = yml.load(filename)
 
-    #print(DATA)
-
     with open(filename, "r") as yamlfile:
         DATA = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
-    fullpath = convertXpathToDictPath(path + '/' + variable)
-    parentpath = convertXpathToDictPath(path)
-    arrayvar = convertXpathToDictVariable(variable, value)
+    if method == 1:
+        fullpath = convertXpathToDictPath(path + '/' + variable)
+        parentpath = convertXpathToDictPath(path)
+        arrayvar = convertXpathToDictVariable(variable, value)
 
-    if validate_dict_path(fullpath)[0] and not new_element:
-        ret = update_dict_element(DATA, fullpath, value)
-    elif new_array_field:
-        ret = write_new_dict_element(DATA, parentpath, arrayvar)
+        if validate_dict_path(fullpath)[0] and not new_element:
+            ret = update_dict_element(DATA, fullpath, value)
+        elif new_array_field:
+            ret = write_new_dict_element(DATA, parentpath, arrayvar)
+        else:
+            ret = write_new_dict_element(DATA, parentpath, value, variable)
     else:
-        ret = write_new_dict_element(DATA, parentpath, value, variable)
+        ret = setnodeValuebyXPath(DATA, path + '/' + variable, value, True)
 
     #DATA=yaml.normalise(DATA)
     #yml.dump(DATA, filename)
-
+    #yaml.default_flow_style = False
     with open(filename, 'w') as yamlfile:
-        yaml.dump(DATA, yamlfile)
+        yaml.dump(DATA, yamlfile, default_flow_style=False)
         #yamlfile.close()
         #lines = [line.strip() for line in file.readlines() if len(line.strip()) != 0]
 
-    removeblanklines(filename)
+    #removeblanklines(filename)
 
     return ret
 
