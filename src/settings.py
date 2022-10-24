@@ -121,7 +121,7 @@ def isnumber(value):
         return False
 
 def showhelp():
-    print("setconf [-r][-w] [-t type_of_file] -f filename [-p path_of_variable] [–v variable] [-d value] [-l list_of_delimiters] [-nospace] [-n] [-h]")
+    print("setconf [-r][-w] [-a action] [-t type_of_file] -f filename [-p path_of_variable] [–k variable] [-v value] [-l list_of_delimiters] [-nospace] [-n] [-h]")
     print("")
     print("  -r         Read inside the configuration file.")
     print("")
