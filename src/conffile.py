@@ -133,10 +133,13 @@ def writetext(filename, text, newtag=False):
     try:
 
         if newtag:
+            print("newtag")
             allow_writing = True
         elif file_contains_line(filename, text):
+            print("contains")
             allow_writing = False
         else:
+            print("else")
             allow_writing = True
 
         if allow_writing:
@@ -162,13 +165,13 @@ def read_lastbyteoffile(filename):
 
 def file_contains_line(filename, text):
 
-    logfile = open(filename, 'r')
-    loglist = logfile.readlines()
-    logfile.close()
+    ffile = open(filename, 'r')
+    loglist = ffile.readlines()
+    ffile.close()
 
     for line in loglist:
         #if str(self.CLIENT_HOST) in line:
-        if text == line:
+        if (text == line) or (text + '\n' == line):
             return True
 
     return False
