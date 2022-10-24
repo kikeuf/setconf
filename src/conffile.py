@@ -1,5 +1,5 @@
+import settings as cfg
 from configparser import ConfigParser
-
 # https://coderzcolumn.com/tutorials/python/configparser-simple-guide-to-create-and-parse-configuration-files
 # Get the configparser object
 #config_object = ConfigParser()
@@ -133,12 +133,20 @@ def writetext(filename, text):
 
     try:
 
-        by = read_lastbyteoffile(filename)
+        if cfg.arg_newtag:
+            allow_writing = True
+        elif file_contains_line(filename, text):
+            allow_writing = False
+        else:
+            allow_writing = True
 
-        with open(filename, 'a') as f:
-            if by != 10 and by != 13:
-                f.write('\n')
-            f.write(text + '\n')
+        if allow_writing:
+            by = read_lastbyteoffile(filename)
+
+            with open(filename, 'a') as f:
+                if by != 10 and by != 13:
+                    f.write('\n')
+                f.write(text + '\n')
 
         return True
 
@@ -152,3 +160,16 @@ def read_lastbyteoffile(filename):
         buffer = ifile.read()
         lby = len(buffer) - 1
         return (buffer[lby])
+
+def file_contains_line(filename, text):
+
+    logfile = open(filename, 'r')
+    loglist = logfile.readlines()
+    logfile.close()
+
+    for line in loglist:
+        #if str(self.CLIENT_HOST) in line:
+        if text == line:
+            return True
+
+    return False
