@@ -54,6 +54,7 @@ def writeconf(filename, section, variable, value, delimiters_list="=,:", delimit
 
         #read_section(filename, section)
 
+        #, comment_prefixes='/'
         config_object = ConfigParser(allow_no_value=True, delimiters=delimiters_list)
         #parser = configparser.ConfigParser(delimiters=('?', '*'))
 
@@ -66,7 +67,9 @@ def writeconf(filename, section, variable, value, delimiters_list="=,:", delimit
             config_object.read(filename)
 
         if not config_object.has_section(section):
-            config_object.add_section(section)
+            #contournement de bug, on vérifie une seconde fois avec un second test
+            if not file_contains_line(filename, '['+section+']'):
+                config_object.add_section(section)
 
         config_object.set(section, variable, value)
 
