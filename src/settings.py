@@ -214,6 +214,7 @@ def init():
         #sudo python3 $SETCONF_PATH/src/setconf.py -init
 
         os.system('sudo -i')
+        os.system('cd /')
 
         print('Retreiving files and folder')
         if setconf_src_path != "":
