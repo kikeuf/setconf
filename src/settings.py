@@ -1,6 +1,8 @@
 
 import os
-from conffile import writeconf, readconf
+from conffile import writeconf, readconf, writetext
+from sys import platform
+import environment as env
 
     # montage variable commune déjà existantes en public
     #global arg_command
@@ -197,4 +199,48 @@ def showhelp_dhcp():
     print("")
     print("  -h                   Show help.")
     print("")
+
+def init():
+
+    setconf_src_path = (os.path.dirname(os.path.realpath(__file__)))
+    home_path = env.getenvvar("HOME")
+
+    if platform == "linux" or platform == "linux2":
+
+        #Commandes à lancer pour démarrer l'init
+        #sudo pip install - e git+https://github.com/kikeuf/setconf#egg=setconf
+        #export SETCONF_PATH = `pip show setconf | grep -E "Location:" | cut -c 11-`
+        #python3 $SETCONF_PATH/src/setconf.py -init
+
+        if setconf_src_path != "":
+            setconf_path = setconf_src_path[0:-4]
+        else:
+            setconf_path = os.system('pip show setconf | grep -E "Location:" | cut -c 11-')
+
+        if setconf_path == "":
+            return
+
+        setconf_file = setconf_path + '/setconf'
+        setdhcp_file = setconf_path + '/setdhcp'
+
+        with open(setconf_file, 'w') as f:
+            f.write("python3 " + setconf_path + "/src/setconf.py $*")
+
+        with open(setdhcp_file, 'w') as f:
+            f.write("python3 " + setconf_path + "/src/setconf.py -w -t dhcp $*")
+
+        os.system('sudo chmod + x ' + setconf_file)
+        os.system('sudo chmod + x ' + setdhcp_file)
+
+        os.system('alias setconf=' + setconf_file)
+        os.system('alias setdhcp=' + setdhcp_file)
+
+        writetext(home_path + '/.bashrc', 'alias setconf=', False, 'remove')
+        writetext(home_path + '/.bashrc', 'alias setdhcp=', False, 'remove')
+        writetext(home_path + '/.bashrc', 'alias setconf=' + setconf_file)
+        writetext(home_path + '/.bashrc', 'alias setdhcp=' + setdhcp_file)
+
+
+
+
 

@@ -3,6 +3,7 @@ from setuptools import setup
 from sys import platform
 
 if platform == "linux" or platform == "linux2":
+    print("hello world")
     os.system('sudo chmod -x ./src/setconf/setconf')
     #find . -type f -exec chmod -x setconf \;
 

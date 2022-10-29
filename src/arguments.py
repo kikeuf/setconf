@@ -19,6 +19,8 @@ def translate_args():
 
     global data
 
+    Doinit = False
+
     try:
 
         helpmode = False
@@ -174,11 +176,19 @@ def translate_args():
                     cfg.arg_bootfile = args[a]
                 else:
                     return "error: conflicted arguments for ip address"
+
+            elif args[a] == "-init": #initialisation
+                Doinit = True
+
             #else:
             #    return "error: bad argument"
             a = a + 1
 
-        #Force values
+        #Force actions or values
+        if Doinit:
+            cfg.init()
+            return ""
+
         if helpmode and cfg.arg_filetype == "dhcp":
             cfg.showhelp_dhcp()
             return ""

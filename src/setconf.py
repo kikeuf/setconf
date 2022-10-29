@@ -84,6 +84,7 @@ if __name__ == '__main__':
     #print(ret)
 
     #testdict()
+    cfg.init()
 
 
     ret = translate_args()
