@@ -150,13 +150,21 @@ def writetext(filename, text, newtag=False, action='update'):
                     if by != 10 and by != 13:
                         f.write('\n')
                     f.write(text + '\n')
+                    return True
+
+            return False
 
         elif action == 'remove':
             content = file_remove_lines(filename, text)
-            with open(filename, 'w') as f:
-                f.write(content)
+            if content != "":
+                with open(filename, 'w') as f:
+                    f.write(content)
+                return True
+            else:
+                return False
 
-        return True
+        else:
+            return False
 
     except Exception:
         return False
@@ -164,36 +172,49 @@ def writetext(filename, text, newtag=False, action='update'):
 
 def read_lastbyteoffile(filename):
 
-    with open(filename, 'rb') as ifile:
-        buffer = ifile.read()
-        lby = len(buffer) - 1
-        return (buffer[lby])
+    try:
+
+        with open(filename, 'rb') as ifile:
+            buffer = ifile.read()
+            lby = len(buffer) - 1
+            return (buffer[lby])
+
+    except:
+        return ""
 
 def file_contains_line(filename, text):
 
-    ffile = open(filename, 'r')
-    loglist = ffile.readlines()
-    ffile.close()
+    try:
+        ffile = open(filename, 'r')
+        loglist = ffile.readlines()
+        ffile.close()
 
-    for line in loglist:
-        #if str(self.CLIENT_HOST) in line:
-        if (text == line) or (text + '\n' == line):
-            return True
+        for line in loglist:
+            #if str(self.CLIENT_HOST) in line:
+            if (text == line) or (text + '\n' == line):
+                return True
 
-    return False
+        return False
+
+    except:
+        return False
 
 def file_remove_lines(filename, text):
 
-    content = ""
+    try:
+        content = ""
 
-    ffile = open(filename, 'r')
-    loglist = ffile.readlines()
-    ffile.close()
+        ffile = open(filename, 'r')
+        loglist = ffile.readlines()
+        ffile.close()
 
-    l = len(text)
-    for line in loglist:
-        xline = line.strip()[0:l]
-        if text != xline:
-            content += line
+        l = len(text)
+        for line in loglist:
+            xline = line.strip()[0:l]
+            if text != xline:
+                content += line
 
-    return content
+        return content
+
+    except:
+        return ""

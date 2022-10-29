@@ -210,7 +210,7 @@ def init():
         #Commandes à lancer pour démarrer l'init
         #sudo pip install - e git+https://github.com/kikeuf/setconf#egg=setconf
         #export SETCONF_PATH = `pip show setconf | grep -E "Location:" | cut -c 11-`
-        #python3 $SETCONF_PATH/src/setconf.py -init
+        #sudo python3 $SETCONF_PATH/src/setconf.py -init
 
         if setconf_src_path != "":
             setconf_path = setconf_src_path[0:-4]
@@ -240,7 +240,10 @@ def init():
         writetext(home_path + '/.bashrc', 'alias setconf=' + setconf_file)
         writetext(home_path + '/.bashrc', 'alias setdhcp=' + setdhcp_file)
 
-
+        writetext('/etc/profile.d/00-aliases.sh', 'alias setconf=', False, 'remove')
+        writetext('/etc/profile.d/00-aliases.sh', 'alias setdhcp=', False, 'remove')
+        writetext('/etc/profile.d/00-aliases.sh', 'alias setconf=' + setconf_file)
+        writetext('/etc/profile.d/00-aliases.sh', 'alias setdhcp=' + setdhcp_file)
 
 
 
