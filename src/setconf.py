@@ -27,20 +27,15 @@ def setconfig():
     if cfg.arg_command == 'read':
         if cfg.arg_filetype == 'conf':
             value = cf.readconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
-            #env.setenvvar(cfg.arg_envvar, value)
             return value
         elif cfg.arg_filetype == 'yaml':
             value = yf.readyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
-            #env.setenvvar(cfg.arg_envvar, value)
             return value
         elif cfg.arg_filetype == 'xml':
-            #value = xf.readxml_sav(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_listindex)
             value = xf.readxml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
-            #env.setenvvar(cfg.arg_envvar, value)
             return value
         elif cfg.arg_filetype == 'json':
             value = jf.readjson(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
-            #env.setenvvar(cfg.arg_envvar, value)
             return value
         else:
             return
@@ -49,23 +44,19 @@ def setconfig():
             ret = cf.writeconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_delimiters, cfg.arg_space_around_delimiters)
             return ret
         elif cfg.arg_filetype == 'yaml':
-            ret = yf.writeyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag)
+            ret = yf.writeyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag, False, cfg.arg_action)
             return ret
         elif cfg.arg_filetype == 'xml':
-            #ret = xf.writexml_sav(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_listindex)
             ret = xf.writexml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag)
             return ret
         elif cfg.arg_filetype == 'json':
             ret = jf.writejson(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag)
             return ret
-        elif cfg.arg_filetype == 'isc':
-            ret = isf.writeisc(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag)
-            return ret
         elif cfg.arg_filetype == 'text':
-            ret = cf.writetext(cfg.arg_conffile, cfg.arg_value, cfg.arg_newtag)
+            ret = cf.writetext(cfg.arg_conffile, cfg.arg_value, cfg.arg_newtag, cfg.arg_action)
             return ret
         elif cfg.arg_filetype == 'dhcp':
-            ret = df.add_host(cfg.arg_conffile,cfg.arg_dhcpgroup, cfg.arg_hostname, cfg.arg_macaddress, cfg.arg_ipaddress, cfg.arg_netmask, cfg.arg_server, cfg.arg_bootfile)
+            ret = df.add_host(cfg.arg_conffile, cfg.arg_dhcpgroup, cfg.arg_hostname, cfg.arg_macaddress, cfg.arg_ipaddress, cfg.arg_netmask, cfg.arg_server, cfg.arg_bootfile)
             return ret
         else:
             return

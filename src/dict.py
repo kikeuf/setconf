@@ -1,4 +1,4 @@
-import settings as cfg
+#import settings as cfg
 
 def getnodeValuebyXPath(root, path):
     ret = getnodebyXPath(root, path)
@@ -32,7 +32,7 @@ def getnodebyXPath(root, path, ForceNodeCreation = False):
     else:
         return nNode, None, pNode, name
 
-def setnodeValuebyXPath(root, path, value, ForceNodeCreation = False):
+def setnodeValuebyXPath(root, path, value, ForceNodeCreation = False, action = "update"):
 
     try:
         ret = getnodebyXPath(root, path, ForceNodeCreation)
@@ -46,7 +46,7 @@ def setnodeValuebyXPath(root, path, value, ForceNodeCreation = False):
             #nNode = value
 
             #print(cfg.arg_action)
-            match cfg.arg_action:
+            match action:
                 case "update":
                     pNode[name] = formatNumberOrText(value)
                 case "append":

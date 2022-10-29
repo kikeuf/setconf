@@ -131,24 +131,30 @@ def remove_first_line_of_file(filename):
         return False
 
 
-def writetext(filename, text, newtag=False):
+def writetext(filename, text, newtag=False, action='update'):
 
     try:
 
-        if newtag:
-            allow_writing = True
-        elif file_contains_line(filename, text):
-            allow_writing = False
-        else:
-            allow_writing = True
+        if action == 'update' or action == 'append':
+            if newtag:
+                allow_writing = True
+            elif file_contains_line(filename, text):
+                allow_writing = False
+            else:
+                allow_writing = True
 
-        if allow_writing:
-            by = read_lastbyteoffile(filename)
+            if allow_writing:
+                by = read_lastbyteoffile(filename)
 
-            with open(filename, 'a') as f:
-                if by != 10 and by != 13:
-                    f.write('\n')
-                f.write(text + '\n')
+                with open(filename, 'a') as f:
+                    if by != 10 and by != 13:
+                        f.write('\n')
+                    f.write(text + '\n')
+
+        elif action == 'remove':
+            content = file_remove_lines(filename, text)
+            with open(filename, 'w') as f:
+                f.write(content)
 
         return True
 
@@ -175,3 +181,19 @@ def file_contains_line(filename, text):
             return True
 
     return False
+
+def file_remove_lines(filename, text):
+
+    content = ""
+
+    ffile = open(filename, 'r')
+    loglist = ffile.readlines()
+    ffile.close()
+
+    l = len(text)
+    for line in loglist:
+        xline = line.strip()[0:l]
+        if text != xline:
+            content += line
+
+    return content

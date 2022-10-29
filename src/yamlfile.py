@@ -14,7 +14,6 @@ import json
 # import ruamel.yaml as yaml
 
 import json
-
 import yaml
 
 # import sys
@@ -127,7 +126,7 @@ def writeyaml_x(filename, path, variable, value, new_element=False, new_array_fi
 
     ret = True
     return ret
-def writeyaml(filename, path, variable, value, new_element=False, new_array_field=False):
+def writeyaml(filename, path, variable, value, new_element=False, new_array_field=False, action='update'):
 
     method = 2
 
@@ -150,7 +149,7 @@ def writeyaml(filename, path, variable, value, new_element=False, new_array_fiel
         else:
             ret = write_new_dict_element(DATA, parentpath, value, variable)
     else:
-        ret = setnodeValuebyXPath(DATA, path + '/' + variable, value, True)
+        ret = setnodeValuebyXPath(DATA, path + '/' + variable, value, True, action)
 
     #DATA=yaml.normalise(DATA)
     #yml.dump(DATA, filename)
