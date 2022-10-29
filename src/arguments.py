@@ -55,7 +55,7 @@ def translate_args():
                 if cfg.arg_filetype == "":
                     a = a + 1
                     cfg.arg_filetype = args[a].lower()
-                    if cfg.arg_filetype != "json" and cfg.arg_filetype != "xml" and cfg.arg_filetype != "conf" and cfg.arg_filetype != "yaml" and cfg.arg_filetype != "text":
+                    if cfg.arg_filetype != "json" and cfg.arg_filetype != "xml" and cfg.arg_filetype != "conf" and cfg.arg_filetype != "yaml" and cfg.arg_filetype != "text" and cfg.arg_filetype != "dhcp":
                         return "error: unknown file type"
                 else:
                     return "error: conflicted arguments for file type"
@@ -118,7 +118,6 @@ def translate_args():
             #        return "error: conflicted arguments for index of list"
             elif args[a] == "-h":
                 helpmode = True
-                cfg.showhelp()
             elif args[a] == "-l":
                 a = a + 1
                 if args[a] != "":
@@ -126,10 +125,69 @@ def translate_args():
 
             elif args[a] == "-nospace":
                 cfg.arg_space_around_delimiters = False
+
+            elif args[a] == "-ip": #ip_address
+                if cfg.arg_ipaddress == "":
+                    a = a + 1
+                    cfg.arg_ipaddress = args[a]
+                else:
+                    return "error: conflicted arguments for ip address"
+
+            elif args[a] == "-mask": #netmask
+                if cfg.arg_netmask == "":
+                    a = a + 1
+                    cfg.arg_netmask = args[a]
+                else:
+                    return "error: conflicted arguments for netmask"
+
+            elif args[a] == "-mac": #mac_address
+                if cfg.arg_macaddress == "":
+                    a = a + 1
+                    cfg.arg_macaddress = args[a]
+                else:
+                    return "error: conflicted arguments for MAC address"
+
+            elif args[a] == "-host": #hostname
+                if cfg.arg_hostname == "":
+                    a = a + 1
+                    cfg.arg_hostname = args[a]
+                else:
+                    return "error: conflicted arguments for hostname"
+
+            elif args[a] == "-server": #next-server
+                if cfg.arg_server == "":
+                    a = a + 1
+                    cfg.arg_server = args[a]
+                else:
+                    return "error: conflicted arguments for next server"
+
+            elif args[a] == "-group": #DHCP groupname
+                if cfg.arg_dhcpgroup == "":
+                    a = a + 1
+                    cfg.arg_dhcpgroup = args[a]
+                else:
+                    return "error: conflicted arguments for DHCP group"
+
+            elif args[a] == "-boot": #boot file
+                if cfg.arg_bootfile == "":
+                    a = a + 1
+                    cfg.arg_bootfile = args[a]
+                else:
+                    return "error: conflicted arguments for ip address"
             #else:
             #    return "error: bad argument"
             a = a + 1
 
+        #Force values
+        if helpmode and cfg.arg_filetype == "dhcp":
+            cfg.showhelp_dhcp()
+            return ""
+        elif helpmode:
+            cfg.showhelp()
+            return ""
+
+        if cfg.arg_filetype == "dhcp":
+            cfg.arg_command = "write"
 
         #if cfg.arg_command=="write":
         #    if cfg.arg_value == "":
@@ -154,6 +212,11 @@ def translate_args():
         if cfg.arg_action == "":
             cfg.arg_action = "update"
 
+        if cfg.arg_conffile == "" and cfg.arg_filetype == "dhcp":
+            dhcpfile = "/etc/dhcp/dhcpd.conf"
+            if file_exists(dhcpfile):
+                cfg.arg_conffile = dhcpfile
+
         #if cfg.arg_envvar == "":
         #    cfg.arg_envvar = cfg.default_env
 
@@ -170,22 +233,36 @@ def translate_args():
             cfg.arg_conffile = env.getenvvar(cfg.arg_conffile[1:])
 
         #Détection des variables non renseignées et fichiers inexistants
-        if helpmode:
-            return ""
+        #if helpmode:
+        #    return ""
 
-        if cfg.arg_section_path == "" and cfg.arg_filetype != "conf" and cfg.arg_filetype != "text":
-            return "error: section or path is not specified"
+        if cfg.arg_filetype == "dhcp":
 
-        if cfg.arg_variable == "" and cfg.arg_filetype != "text":
-            return "error: variable name is not specified"
+            if cfg.arg_dhcpgroup == "":
+                return "error: dhcp group is not specified"
 
-        #if cfg.arg_value == "" and cfg.arg_command == "write":
-        #    return "error: value is not specified"
+            if cfg.arg_hostname == "":
+                return "error: hostname is not specified"
+
+            if cfg.arg_macaddress and cfg.arg_ipaddress == "":
+                return "error: at least an IP address or a MAC address must be specified"
+
+        else:
+
+            if cfg.arg_section_path == "" and cfg.arg_filetype != "conf" and cfg.arg_filetype != "text":
+                return "error: section or path is not specified"
+
+            if cfg.arg_variable == "" and cfg.arg_filetype != "text":
+                return "error: variable name is not specified"
+
+            #if cfg.arg_value == "" and cfg.arg_command == "write":
+            #    return "error: value is not specified"
+
+
 
         if cfg.arg_conffile == "":
             return "error: configuration file is not specified"
-
-        if not file_exists(cfg.arg_conffile):
+        elif not file_exists(cfg.arg_conffile):
             return "error: configuration file cannot be found"
 
     except Exception as ex:

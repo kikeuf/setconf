@@ -8,6 +8,7 @@ import jsonfile as jf
 import settings as cfg
 import xmlfile as xf
 import yamlfile as yf
+import dhcpfile as df
 from arguments import translate_args
 from dict import testdict
 
@@ -22,6 +23,7 @@ from dict import testdict
 #        print(f"Argument {i:>6}: {arg}")
 
 def setconfig():
+
     if cfg.arg_command == 'read':
         if cfg.arg_filetype == 'conf':
             value = cf.readconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
@@ -56,8 +58,14 @@ def setconfig():
         elif cfg.arg_filetype == 'json':
             ret = jf.writejson(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag)
             return ret
+        elif cfg.arg_filetype == 'isc':
+            ret = isf.writeisc(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag)
+            return ret
         elif cfg.arg_filetype == 'text':
             ret = cf.writetext(cfg.arg_conffile, cfg.arg_value, cfg.arg_newtag)
+            return ret
+        elif cfg.arg_filetype == 'dhcp':
+            ret = df.add_host(cfg.arg_conffile,cfg.arg_dhcpgroup, cfg.arg_hostname, cfg.arg_macaddress, cfg.arg_ipaddress, cfg.arg_netmask, cfg.arg_server, cfg.arg_bootfile)
             return ret
         else:
             return
