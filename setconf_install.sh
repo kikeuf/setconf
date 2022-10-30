@@ -6,7 +6,7 @@ echo "Installing setconf and setdhcp"
 #sudo -i
 cd /
 
-sudo wget -q -P /tmp https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install_end.sh
+sudo wget -P /tmp https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install_end.sh
 sudo pip install -e git+https://github.com/kikeuf/setconf#egg=setconf
 
 export SETCONF_PATH=`pip show setconf | grep -E "Location:" | cut -c 11-`
