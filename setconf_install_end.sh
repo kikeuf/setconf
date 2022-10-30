@@ -24,3 +24,6 @@ sudo chmod +x $SETDHCP_FILE
 
 sudo rm /tmp/setconf_install.sh
 sudo rm /tmp/setconf_install_end.sh
+
+#Commande to check if everything works
+#printenv | grep SET ; echo "---------" ; alias | grep set ; echo "---------";  cat /etc/profile.d/00-setconf_aliases.sh
