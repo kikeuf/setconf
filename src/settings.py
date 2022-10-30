@@ -271,3 +271,4 @@ def uninstall():
 
         writetext('/etc/profile.d/00-aliases.sh', 'alias setconf=', False, 'remove')
         writetext('/etc/profile.d/00-aliases.sh', 'alias setdhcp=', False, 'remove')
+

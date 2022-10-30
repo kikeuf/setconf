@@ -33,9 +33,10 @@ sudo rm /tmp/fmt_path
 export NEW_PATH=`echo $PATH | sed 's/'$FMT_PATH'//' | sed 's/::/:/g' | sed 's/^://' | sed 's/:$//'`
 export PATH=`echo $SETCONF_PATH':'$NEW_PATH`
 
-sudo echo 'alias setconf='$SETCONF_FILE > /etc/profile.d/00-setconf_aliases.sh
-sudo echo 'alias setdhcp='$SETDHCP_FILE >> /etc/profile.d/00-setconf_aliases.sh
-sudo echo 'export PATH='$PATH >> /etc/profile.d/00-setconf_aliases.sh
+#sudo echo 'alias setconf='$SETCONF_FILE > /etc/profile.d/00-setconf_aliases.sh
+#sudo echo 'alias setdhcp='$SETDHCP_FILE >> /etc/profile.d/00-setconf_aliases.sh
+#sudo echo 'export PATH='$PATH >> /etc/profile.d/00-setconf_aliases.sh
 
-#sudo python3 $SETCONF_PATH/src/setconf.py -init
+#On fait une seconde passe avec init, car certaines commandes ne fonctionne pas en fonction des droits
+sudo python3 $SETCONF_PATH/src/setconf.py -init
 
