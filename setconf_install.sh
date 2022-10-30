@@ -47,7 +47,7 @@ sudo sh $SETCONF_PATH/setconf_install_end.sh
 
 ##sudo chmod +x $SETCONF_PATH/setconf_install.sh
 #sudo rm $SETCONF_PATH/setconf_install.sh
-#sudo chmod +x $SETCONF_PATH/setconf_uninstall
+#sudo chmod +x $SETCONF_PATH/setconf_uninstall.sh
 
 #sudo chmod +x $SETCONF_FILE
 #sudo chmod +x $SETDHCP_FILE
