@@ -2,11 +2,14 @@ export SETCONF_PATH=`pip show setconf | grep -E "Location:" | cut -c 11-`
 export SETCONF_FILE=$SETCONF_PATH/setconf
 export SETDHCP_FILE=$SETCONF_PATH/setdhcp
 
-#sudo echo 'alias setconf='$SETCONF_FILE > /etc/profile.d/00-setconf_aliases.sh
-#sudo echo 'alias setdhcp='$SETDHCP_FILE >> /etc/profile.d/00-setconf_aliases.sh
-#sudo echo 'export PATH='$PATH >> /etc/profile.d/00-setconf_aliases.sh
+sudo echo 'alias setconf='$SETCONF_FILE > /etc/profile.d/00-setconf_aliases.sh
+sudo echo 'alias setdhcp='$SETDHCP_FILE >> /etc/profile.d/00-setconf_aliases.sh
 
-sudo mv /tmp/00-setconf_aliases.sh /etc/profile.d/00-setconf_aliases.sh
+sudo echo "if ! [[ \$PATH =~ '"$SETCONF_PATH"' ]]; then" >> /etc/profile.d/00-setconf_aliases.sh
+sudo echo "   export PATH='"$SETCONF_PATH":'\$PATH" >> /etc/profile.d/00-setconf_aliases.sh
+sudo echo "fi" >> /etc/profile.d/00-setconf_aliases.sh
+
+#sudo mv /tmp/00-setconf_aliases.sh /etc/profile.d/00-setconf_aliases.sh
 
 #sudo chmod +x $SETCONF_PATH/setconf_install.sh
 sudo rm $SETCONF_PATH/setconf_install.sh

@@ -28,9 +28,9 @@ export PATH=`echo $SETCONF_PATH':'$NEW_PATH`
 unset FMT_PATH
 unset NEW_PATH
 
-sudo echo 'alias setconf='$SETCONF_FILE > /tmp/00-setconf_aliases.sh
-sudo echo 'alias setdhcp='$SETDHCP_FILE >> /tmp/00-setconf_aliases.sh
-sudo echo 'export PATH='$PATH >> /tmp/00-setconf_aliases.sh
+#sudo echo 'alias setconf='$SETCONF_FILE > /tmp/00-setconf_aliases.sh
+#sudo echo 'alias setdhcp='$SETDHCP_FILE >> /tmp/00-setconf_aliases.sh
+#sudo echo 'export PATH='$PATH >> /tmp/00-setconf_aliases.sh
 
 ##Pour que les lignes suivantes fonctionnent, il faut passer en mode administrateur root
 #cur_user = $USER
