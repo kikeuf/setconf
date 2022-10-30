@@ -248,10 +248,26 @@ def init():
         #writetext(home_path + '/.bashrc', 'alias setconf=' + setconf_file)
         #writetext(home_path + '/.bashrc', 'alias setdhcp=' + setdhcp_file)
 
+        writetext('/etc/profile.d/00-setconf_aliases.sh', 'alias setconf=', False, 'remove')
+        writetext('/etc/profile.d/00-setconf_aliases.sh', 'alias setdhcp=', False, 'remove')
+        writetext('/etc/profile.d/00-setconf_aliases.sh', 'alias setconf=' + setconf_file)
+        writetext('/etc/profile.d/00-setconf_aliases.sh', 'alias setdhcp=' + setdhcp_file)
+
+def uninstall():
+
+    setconf_src_path = (os.path.dirname(os.path.realpath(__file__)))
+
+    if platform == "linux" or platform == "linux2":
+        if setconf_src_path != "":
+            setconf_path = setconf_src_path[0:-4]
+        else:
+            setconf_path = os.system('pip show setconf | grep -E "Location:" | cut -c 11-')
+
+        os.system('unalias setconf')
+        os.system('unalias setdhcp')
+
+        # writetext(home_path + '/.bashrc', 'alias setconf=', False, 'remove')
+        # writetext(home_path + '/.bashrc', 'alias setdhcp=', False, 'remove')
+
         writetext('/etc/profile.d/00-aliases.sh', 'alias setconf=', False, 'remove')
         writetext('/etc/profile.d/00-aliases.sh', 'alias setdhcp=', False, 'remove')
-        writetext('/etc/profile.d/00-aliases.sh', 'alias setconf=' + setconf_file)
-        writetext('/etc/profile.d/00-aliases.sh', 'alias setdhcp=' + setdhcp_file)
-
-
-
