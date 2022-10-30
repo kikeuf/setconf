@@ -22,7 +22,7 @@ sudo chmod +x $SETDHCP_FILE
 
 #sudo chmod +x $SETCONF_PATH/setconf_install.sh
 sudo rm $SETCONF_PATH/setconf_install.sh
-sudo chmod +x $SETCONF_PATH/setconf_uninstall.sh
+sudo chmod +x $SETCONF_PATH/uninstall.sh
 
 #La ligne suivante ne fonctionne pas, il faut transister par un fichier temporaire comme workaround
 #export FMT_PATH=`echo $SETCONF_PATH | sed 's/\//\\\//g'`
