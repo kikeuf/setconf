@@ -1,4 +1,4 @@
-#sudo wget -P /tmp https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install.sh && sudo sh /tmp/setconf_install.sh && sudo rm /tmp/setconf_install.sh
+#sudo wget -P /tmp https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install.sh && . /tmp/setconf_install.sh && sudo rm /tmp/setconf_install.sh
 
 echo "Installing setconf and setdhcp"
 
@@ -22,7 +22,7 @@ sudo chmod +x $SETDHCP_FILE
 
 #sudo chmod +x $SETCONF_PATH/setconf_install.sh
 sudo rm $SETCONF_PATH/setconf_install.sh
-sudo chmod +x $SETCONF_PATH/uninstall.sh
+sudo chmod +x $SETCONF_PATH/setconf_uninstall
 
 #La ligne suivante ne fonctionne pas, il faut transister par un fichier temporaire comme workaround
 #export FMT_PATH=`echo $SETCONF_PATH | sed 's/\//\\\//g'`
