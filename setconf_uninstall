@@ -16,4 +16,9 @@ sudo rm /tmp/fmt_path
 
 export PATH=`echo $PATH | sed 's/'$FMT_PATH'//' | sed 's/::/:/g' | sed 's/^://' | sed 's/:$//'`
 
+unset SETCONF_PATH
+unset SETCONF_FILE
+unset SETDHCP_FILE
+unset FMT_PATH
+
 sudo rm -r $SETCONF_PATH
