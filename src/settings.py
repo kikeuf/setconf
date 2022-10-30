@@ -213,8 +213,8 @@ def init():
         #export SETCONF_PATH=`pip show setconf | grep -E "Location:" | cut -c 11-`
         #sudo python3 $SETCONF_PATH/src/setconf.py -init
 
-        os.system('sudo -i')
-        os.system('cd /')
+        #os.system('sudo -i')
+        #os.system('cd /')
 
         print('Retreiving files and folder')
         if setconf_src_path != "":

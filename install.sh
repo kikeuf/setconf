@@ -1,1 +1,0 @@
-echo "Installing setconf and setdhcp"
