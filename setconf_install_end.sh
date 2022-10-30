@@ -12,8 +12,6 @@ sudo echo "fi" >> /etc/profile.d/00-setconf_aliases.sh
 #sudo mv /tmp/00-setconf_aliases.sh /etc/profile.d/00-setconf_aliases.sh
 
 #sudo chmod +x $SETCONF_PATH/setconf_install.sh
-sudo rm $SETCONF_PATH/setconf_install.sh
-sudo rm $SETCONF_PATH/setconf_install_end.sh
 sudo chmod +x $SETCONF_PATH/setconf_uninstall
 
 sudo echo 'python3 '$SETCONF_PATH'/src/setconf.py $*' > $SETCONF_FILE
@@ -23,7 +21,9 @@ sudo chmod +x $SETCONF_FILE
 sudo chmod +x $SETDHCP_FILE
 
 sudo rm /tmp/setconf_install.sh
-sudo rm /tmp/setconf_install_end.sh
+#sudo rm /tmp/setconf_install_end.sh
+sudo rm $SETCONF_PATH/setconf_install.sh
+sudo rm $SETCONF_PATH/setconf_install_end.sh
 
 #Commande to check if everything works
 #printenv | grep SET ; echo "---------" ; alias | grep set ; echo "---------";  cat /etc/profile.d/00-setconf_aliases.sh

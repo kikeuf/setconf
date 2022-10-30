@@ -1,12 +1,11 @@
-#sudo wget -O '/tmp/setconf_install.sh' https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install.sh && . /tmp/setconf_install.sh && sudo rm /tmp/setconf_install.sh
-#sudo wget -O '/tmp/setconf_install.sh' https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install.sh && . /tmp/setconf_install.sh && sudo sh /tmp/setconf_install_end.sh
+#sudo wget -O '/tmp/setconf_install.sh' https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install.sh && . /tmp/setconf_install.sh
 
 echo "Installing setconf and setdhcp"
 
 #sudo -i
 cd /
 
-sudo wget -O '/tmp/setconf_install_end.sh' https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install_end.sh
+#sudo wget -O '/tmp/setconf_install_end.sh' https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install_end.sh
 sudo pip install -e git+https://github.com/kikeuf/setconf#egg=setconf
 
 export SETCONF_PATH=`pip show setconf | grep -E "Location:" | cut -c 11-`
@@ -28,7 +27,8 @@ export PATH=`echo $SETCONF_PATH':'$NEW_PATH`
 unset FMT_PATH
 unset NEW_PATH
 
-sudo sh /tmp/setconf_install_end.sh
+#sudo sh /tmp/setconf_install_end.sh
+sudo sh $SETCONF_PATH/setconf_install_end.sh
 
 #sudo echo 'alias setconf='$SETCONF_FILE > /tmp/00-setconf_aliases.sh
 #sudo echo 'alias setdhcp='$SETDHCP_FILE >> /tmp/00-setconf_aliases.sh
