@@ -20,10 +20,6 @@ sudo echo 'python3 '$SETCONF_PATH'/src/setconf.py -w -t dhcp $*' > $SETDHCP_FILE
 sudo chmod +x $SETCONF_FILE
 sudo chmod +x $SETDHCP_FILE
 
-#sudo chmod +x $SETCONF_PATH/setconf_install.sh
-sudo rm $SETCONF_PATH/setconf_install.sh
-sudo chmod +x $SETCONF_PATH/setconf_uninstall
-
 #La ligne suivante ne fonctionne pas, il faut transister par un fichier temporaire comme workaround
 #export FMT_PATH=`echo $SETCONF_PATH | sed 's/\//\\\//g'`
 sudo echo $SETCONF_PATH | sed 's/\//\\\//g' > /tmp/fmt_path
@@ -33,10 +29,25 @@ sudo rm /tmp/fmt_path
 export NEW_PATH=`echo $PATH | sed 's/'$FMT_PATH'//' | sed 's/::/:/g' | sed 's/^://' | sed 's/:$//'`
 export PATH=`echo $SETCONF_PATH':'$NEW_PATH`
 
-#sudo echo 'alias setconf='$SETCONF_FILE > /etc/profile.d/00-setconf_aliases.sh
-#sudo echo 'alias setdhcp='$SETDHCP_FILE >> /etc/profile.d/00-setconf_aliases.sh
-#sudo echo 'export PATH='$PATH >> /etc/profile.d/00-setconf_aliases.sh
+#Pour que les lignes suivantes fonctionnent, il faut passer en mode administrateur root
+cur_user = $USER
+if [ $USER != 'root' ]
+then
+  sudo -i
+fi
 
-#On fait une seconde passe avec init, car certaines commandes ne fonctionne pas en fonction des droits
-sudo python3 $SETCONF_PATH/src/setconf.py -init
+sudo echo 'alias setconf='$SETCONF_FILE > /etc/profile.d/00-setconf_aliases.sh
+sudo echo 'alias setdhcp='$SETDHCP_FILE >> /etc/profile.d/00-setconf_aliases.sh
+sudo echo 'export PATH='$PATH >> /etc/profile.d/00-setconf_aliases.sh
+
+#sudo chmod +x $SETCONF_PATH/setconf_install.sh
+sudo rm $SETCONF_PATH/setconf_install.sh
+sudo chmod +x $SETCONF_PATH/setconf_uninstall
+
+if [ $USER != $cur_user ]
+then
+  exit
+fi
+
+#sudo python3 $SETCONF_PATH/src/setconf.py -init
 
