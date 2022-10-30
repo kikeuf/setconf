@@ -243,10 +243,10 @@ def init():
         os.system('alias setconf="' + setconf_file + '"')
         os.system('alias setdhcp="' + setdhcp_file + '"')
 
-        writetext(home_path + '/.bashrc', 'alias setconf=', False, 'remove')
-        writetext(home_path + '/.bashrc', 'alias setdhcp=', False, 'remove')
-        writetext(home_path + '/.bashrc', 'alias setconf=' + setconf_file)
-        writetext(home_path + '/.bashrc', 'alias setdhcp=' + setdhcp_file)
+        #writetext(home_path + '/.bashrc', 'alias setconf=', False, 'remove')
+        #writetext(home_path + '/.bashrc', 'alias setdhcp=', False, 'remove')
+        #writetext(home_path + '/.bashrc', 'alias setconf=' + setconf_file)
+        #writetext(home_path + '/.bashrc', 'alias setdhcp=' + setdhcp_file)
 
         writetext('/etc/profile.d/00-aliases.sh', 'alias setconf=', False, 'remove')
         writetext('/etc/profile.d/00-aliases.sh', 'alias setdhcp=', False, 'remove')

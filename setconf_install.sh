@@ -2,7 +2,7 @@
 
 echo "Installing setconf and setdhcp"
 
-sudo -i
+#sudo -i
 cd /
 
 sudo pip install -e git+https://github.com/kikeuf/setconf#egg=setconf
