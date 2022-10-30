@@ -35,24 +35,26 @@ unset NEW_PATH
 #  sudo -i
 #fi
 
-#sudo echo 'alias setconf='$SETCONF_FILE > /etc/profile.d/00-setconf_aliases.sh
-#sudo echo 'alias setdhcp='$SETDHCP_FILE >> /etc/profile.d/00-setconf_aliases.sh
-#sudo echo 'export PATH='$PATH >> /etc/profile.d/00-setconf_aliases.sh
+sudo echo 'alias setconf='$SETCONF_FILE > /etc/profile.d/00-setconf_aliases.sh
+sudo echo 'alias setdhcp='$SETDHCP_FILE >> /etc/profile.d/00-setconf_aliases.sh
+sudo echo 'export PATH='$PATH >> /etc/profile.d/00-setconf_aliases.sh
 
-##sudo chmod +x $SETCONF_PATH/setconf_install.sh
-#sudo rm $SETCONF_PATH/setconf_install.sh
-#sudo chmod +x $SETCONF_PATH/setconf_uninstall
+#sudo chmod +x $SETCONF_PATH/setconf_install.sh
+sudo rm $SETCONF_PATH/setconf_install.sh
+sudo chmod +x $SETCONF_PATH/setconf_uninstall
 
-#sudo chmod +x $SETCONF_FILE
-#sudo chmod +x $SETDHCP_FILE
+sudo chmod +x $SETCONF_FILE
+sudo chmod +x $SETDHCP_FILE
 
-#sudo echo 'python3 '$SETCONF_PATH'/src/setconf.py $*' > $SETCONF_FILE
-#sudo echo 'python3 '$SETCONF_PATH'/src/setconf.py -w -t dhcp $*' > $SETDHCP_FILE
+sudo echo 'python3 '$SETCONF_PATH'/src/setconf.py $*' > $SETCONF_FILE
+sudo echo 'python3 '$SETCONF_PATH'/src/setconf.py -w -t dhcp $*' > $SETDHCP_FILE
 
 #if [ $USER != $cur_user ]
 #then
 #  exit
 #fi
+
+sudo rm /tmp/setconf_install.sh
 
 #sudo python3 $SETCONF_PATH/src/setconf.py -init
 
