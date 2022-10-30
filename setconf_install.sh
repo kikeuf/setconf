@@ -1,12 +1,12 @@
-#sudo wget -P /tmp https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install.sh && . /tmp/setconf_install.sh && sudo rm /tmp/setconf_install.sh
-#sudo wget -P /tmp https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install.sh && . /tmp/setconf_install.sh && sudo sh /tmp/setconf_install_end.sh
+#sudo wget -O -P /tmp https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install.sh && . /tmp/setconf_install.sh && sudo rm /tmp/setconf_install.sh
+#sudo wget -O -P /tmp https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install.sh && . /tmp/setconf_install.sh && sudo sh /tmp/setconf_install_end.sh
 
 echo "Installing setconf and setdhcp"
 
 #sudo -i
 cd /
 
-sudo wget -P /tmp https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install_end.sh
+sudo wget -O -P /tmp https://raw.githubusercontent.com/kikeuf/setconf/master/setconf_install_end.sh
 sudo pip install -e git+https://github.com/kikeuf/setconf#egg=setconf
 
 export SETCONF_PATH=`pip show setconf | grep -E "Location:" | cut -c 11-`
