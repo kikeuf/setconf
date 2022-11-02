@@ -130,33 +130,39 @@ def extract_group_in_group(lines, keyword, next_keyword = ""):
         #    part[part_id] += dline + CRLF
         elif xline[:len(keyword)] == keyword:
 
-            if next_keyword == "":
-                part_id = 1
-                ret = extract_group(mlines, i)
-                i = ret[0]
-                part[part_id] = ret[1]
-                part_id = 2
-                found = True
-            else:
-                nline = mlines[i+1]
-                nxline = nline.strip()
-                if len(nxline) != 0:
-                    if nxline[0] == "#":
-                        code = (nxline[1:].strip())[:len(next_keyword)]
-                        if code == next_keyword:
-                            #C'est notre bloc, il faut l'extraire
-                            part_id = 1
-                            ret = extract_group(lines, i)
-                            i = ret[0]
-                            part[part_id] = ret[1]
-                            part_id = 2
-                            #print("econtent : " + econtent)
-                            found = True
+            #On se prémunit d'un préfixe de nom identique au nom
+            nextChar = xline[len(keyword):len(keyword) + 1]
+            if nextChar in [' ', '{', ';', chr(13), chr(10)]:
+
+                if next_keyword == "":
+                    part_id = 1
+                    ret = extract_group(mlines, i)
+                    i = ret[0]
+                    part[part_id] = ret[1]
+                    part_id = 2
+                    found = True
+                else:
+                    nline = mlines[i+1]
+                    nxline = nline.strip()
+                    if len(nxline) != 0:
+                        if nxline[0] == "#":
+                            code = (nxline[1:].strip())[:len(next_keyword)]
+                            if code == next_keyword:
+                                #C'est notre bloc, il faut l'extraire
+                                part_id = 1
+                                ret = extract_group(lines, i)
+                                i = ret[0]
+                                part[part_id] = ret[1]
+                                part_id = 2
+                                #print("econtent : " + econtent)
+                                found = True
+                            else:
+                                #Ce n'est pas notre bloc ou bloc non identifié, on continue la simple recopie
+                                part[part_id] += dline + CRLF
                         else:
-                            #Ce n'est pas notre bloc ou bloc non identifié, on continue la simple recopie
                             part[part_id] += dline + CRLF
-                    else:
-                        part[part_id] += dline + CRLF
+            else:
+                part[part_id] += dline + CRLF
         else:
             part[part_id] += dline + CRLF
 
