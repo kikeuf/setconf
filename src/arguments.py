@@ -238,9 +238,15 @@ def translate_args():
             cfg.arg_value = env.getenvvar(default_env)
         elif cfg.arg_value[0:1] == "$":
             cfg.arg_value = env.getenvvar(cfg.arg_value[1:])
+            
+        if cfg.arg_variable[0:1] == "$":
+            cfg.arg_variable = env.getenvvar(cfg.arg_variable[1:])
 
         if cfg.arg_conffile[0:1] == "$":
             cfg.arg_conffile = env.getenvvar(cfg.arg_conffile[1:])
+
+        if cfg.arg_section_path[0:1] == "$":
+            cfg.arg_section_path = env.getenvvar(cfg.arg_section_path[1:])
 
         #Détection des variables non renseignées et fichiers inexistants
         #if helpmode:
