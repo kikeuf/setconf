@@ -201,3 +201,4 @@ def testdict():
 
 
     # Output: {'Physics': 67, 'Maths': 87, 'Practical': 48}
+

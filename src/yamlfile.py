@@ -15,6 +15,7 @@ import json
 
 import json
 import yaml
+import re
 
 # import sys
 from dictpath_main import get_dict_item, update_dict_element, write_new_dict_element, convertXpathToDictPath, \
@@ -155,11 +156,11 @@ def writeyaml(filename, path, variable, value, new_element=False, new_array_fiel
     #yml.dump(DATA, filename)
     #yaml.default_flow_style = False
     with open(filename, 'w') as yamlfile:
-        yaml.dump(DATA, yamlfile, default_flow_style=False)
+        yaml.dump(DATA, yamlfile, default_style=None, default_flow_style=False)
         #yamlfile.close()
         #lines = [line.strip() for line in file.readlines() if len(line.strip()) != 0]
 
-    #removeblanklines(filename)
+        removeblanklines(filename)
 
     return ret
 
@@ -229,3 +230,211 @@ def yamltojson(yamlfile, jsonfile):
 
     with open(jsonfile, 'w') as json_file:
         json.dump(configuration, json_file)
+
+
+def writeyamlalternate(yamlfile, xpath, variable, value):
+
+    try:
+
+        with open(yamlfile, 'r') as file:
+            lines = file.readlines()
+
+        with open(yamlfile, 'r') as file:
+            content = file.read()
+
+        lines = createsection(lines, xpath, variable, value)
+
+        #if not sectionexists(yamlfile, xpath + '/' + variable):
+        #    createsection(lines, xpath, variable, value)
+
+
+        newcontent = yamlchangevalue(lines, xpath + '/' + variable, value)
+
+        if newcontent != '' and newcontent != content:
+            with open(yamlfile, 'w') as file:
+                file.write(newcontent)
+        else:
+            return False
+
+        return True
+
+    except:
+        return False
+
+def getdeepersection(yamllines, xpath):
+
+    elements = xpath.split('/')
+    i = 0
+    max = len(elements)
+    line_count = 0
+    insert_line = -1
+    pindent = ''
+    pindent_len = 0
+    valid_path = ''
+
+
+    for line in yamllines:
+        line_count += 1
+        if elements[i] == '':
+            i += 1
+        el = elements[i] + ":"
+        pos = line.find(el)
+        cindent = getindent(line)
+        cindent_len = len(cindent)
+        if cindent_len <= pindent_len and valid_path != '' and pindent_len != 0:
+            return insert_line, pindent, valid_path
+        elif pos != -1:
+            valid_path += '/' + elements[i]
+            pindent = cindent
+            pindent_len = cindent_len
+            insert_line = line_count
+            i += 1
+            if i == max:
+                return 0, pindent, valid_path
+
+    return insert_line, pindent, valid_path
+
+def createsection(yamllines, xpath, variable, value):
+
+    fpath = xpath + '/' + variable
+    ret = getdeepersection(yamllines, fpath)
+    idx = ret[0]
+    pindent = ret[1]
+    valid_path = ret[2]
+
+    if idx <= 0:
+        return yamllines
+
+    missing_path = getstringafter(fpath, valid_path)
+    missings = missing_path.split('/')
+
+    cnt = 0
+    max = len(missings)
+    for missing in missings:
+        cnt += 1
+
+        if missing != '':
+            idt = getindent(yamllines[idx])
+            if len(idt) > len(pindent):
+                pindent = idt
+            else:
+                pindent += '  '
+            if cnt == max:
+                yamllines.insert(idx, pindent + missing + ": " + value + '\n')
+                return yamllines
+            else:
+                yamllines.insert(idx, pindent + missing + ":" + '\n')
+                idx += 1
+
+    return yamllines
+
+def yamlchangevalue(yamllines, xpath, value):
+
+    elements = xpath.split('/')
+    i = 0
+    found = False
+    ntext = ""
+    nline = ""
+    max = len(elements)
+    line_count = 0
+    buf_value = ""
+    buf_insertline = -1
+
+    for line in yamllines:
+        line_count += 1
+        if elements[i] == '':
+            i += 1
+        el = elements[i] + ":"
+        pos = line.find(el)
+        indent = line[0:pos]
+        if pos != -1 and not found:
+            i += 1
+            if i == max:
+                found = True
+                i = 0
+                rvalue = getstringafter(line, el).strip()
+                if rvalue.strip() == "|":
+                    #C'est une chaine de caractères sur plusieurs lignes, dans ce cas on ignore la mise à jour
+                    nline = line
+                elif rvalue != '':
+                    nline = indent + el + ' ' + value + '\n'
+                else:
+                    # on vérifie s'il s'agit d'une liste, auquel cas on ajoute la valeur en fin de liste
+                    ret = countlistlines(yamllines, line_count)
+                    if ret[0] > 0:
+                        buf_value = ret[1] + "- " + value + '\n'
+                        buf_insertline = line_count + ret[0]
+
+                    nline = line
+            else:
+                nline = line
+        else:
+            nline = line
+
+        ntext += nline
+        if line_count == buf_insertline and buf_value != '':
+            ntext += buf_value
+
+    #print(ntext)
+    return ntext
+
+def getstringafter(mystring, matchstring):
+
+    match = (re.search(matchstring, mystring))
+
+    if match != None:
+
+        # getting the starting index using match.start()
+        pos_s = match.start()
+        pos_e = pos_s + len(matchstring)
+
+        return mystring[pos_e:]
+
+        # Getting the start and end index in tuple format using match.span()
+        #print("start and end index", match.span())
+
+    else:
+        return ''
+
+def countlistlines(lines, index):
+
+    try:
+
+        e_cnt = 0
+        c_cnt = 0
+        end_of_list = False
+        i = index
+        idt = ''
+
+        while not end_of_list:
+            char = lines[i].strip()[0]
+            match char:
+                case '-':
+                    if e_cnt == 0:
+                        idt = getindent(lines[i])
+                    e_cnt += 1
+                    i += 1
+                case '#':
+                    c_cnt += 1
+                    i += 1
+                case _:
+                    end_of_list = True
+        if e_cnt == 0:
+            return 0
+        else:
+            return e_cnt + c_cnt, idt
+
+    except:
+        return -1
+
+def getindent(mystring):
+
+    idt = ''
+    for ch in mystring:
+        if ch == ' ':
+            idt += ' '
+        else:
+            return idt
+
+    return idt
+

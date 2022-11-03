@@ -28,7 +28,7 @@ def setconfig():
         if cfg.arg_filetype == 'conf':
             value = cf.readconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
             return value
-        elif cfg.arg_filetype == 'yaml':
+        elif cfg.arg_filetype == 'yaml' or cfg.arg_filetype == 'yaml2':
             value = yf.readyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
             return value
         elif cfg.arg_filetype == 'xml':
@@ -42,22 +42,24 @@ def setconfig():
     elif cfg.arg_command == 'write':
         if cfg.arg_filetype == 'conf':
             ret = cf.writeconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_delimiters, cfg.arg_space_around_delimiters)
-            return ret
+            #return ret
         elif cfg.arg_filetype == 'yaml':
             ret = yf.writeyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag, False, cfg.arg_action)
-            return ret
+            #return ret
+        elif cfg.arg_filetype == 'yaml2':
+            ret = yf.writeyamlalternate(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value)
         elif cfg.arg_filetype == 'xml':
             ret = xf.writexml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag)
-            return ret
+            #return ret
         elif cfg.arg_filetype == 'json':
             ret = jf.writejson(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_newtag)
-            return ret
+            #return ret
         elif cfg.arg_filetype == 'text':
             ret = cf.writetext(cfg.arg_conffile, cfg.arg_value, cfg.arg_newtag, cfg.arg_action)
-            return ret
+            #return ret
         elif cfg.arg_filetype == 'dhcp':
             ret = df.add_host(cfg.arg_conffile, cfg.arg_dhcpgroup, cfg.arg_hostname, cfg.arg_macaddress, cfg.arg_ipaddress, cfg.arg_netmask, cfg.arg_server, cfg.arg_bootfile)
-            return ret
+            #return ret
         else:
             return
     else:
@@ -86,7 +88,6 @@ if __name__ == '__main__':
     #testdict()
     #cfg.init()
 
-
     ret = translate_args()
     #cfg.print_args()
     if not (ret is None):
@@ -94,7 +95,8 @@ if __name__ == '__main__':
     else:
         #print("command : " + cfg.arg_command + " | variable : " + cfg.arg_variable + " | value : " + cfg.arg_value)
         ret = setconfig()
-        print(ret)
+        if not (ret is None):
+            print(ret)
 
 
         #yf.createyamltest()

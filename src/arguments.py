@@ -57,7 +57,7 @@ def translate_args():
                 if cfg.arg_filetype == "":
                     a = a + 1
                     cfg.arg_filetype = args[a].lower()
-                    if cfg.arg_filetype != "json" and cfg.arg_filetype != "xml" and cfg.arg_filetype != "conf" and cfg.arg_filetype != "yaml" and cfg.arg_filetype != "text" and cfg.arg_filetype != "dhcp":
+                    if cfg.arg_filetype != "json" and cfg.arg_filetype != "xml" and cfg.arg_filetype != "conf" and cfg.arg_filetype != "yaml" and cfg.arg_filetype != "text" and cfg.arg_filetype != "yaml2" and cfg.arg_filetype != "dhcp":
                         return "error: unknown file type"
                 else:
                     return "error: conflicted arguments for file type"
