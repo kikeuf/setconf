@@ -23,6 +23,7 @@ from dictpath_main import get_dict_item, update_dict_element, write_new_dict_ele
 from dictpath_utils import validate_dict_path
 from settings import removeblanklines
 from dict import getnodeValuebyXPath, getnodeObjectbyXPath, setnodeValuebyXPath
+from journal import log
 
 
 #from pathlib import Path
@@ -67,7 +68,8 @@ def readyaml(filename, path, variable):
         ret = get_dict_item(data, fullpath)
         return ret
 
-    except:
+    except Exception as e:
+        log('Setconf error : ' + repr(e))
         return ""
 
 def writeyaml_x(filename, path, variable, value, new_element=False, new_array_field=False):
@@ -129,40 +131,46 @@ def writeyaml_x(filename, path, variable, value, new_element=False, new_array_fi
     return ret
 def writeyaml(filename, path, variable, value, new_element=False, new_array_field=False, action='update'):
 
-    method = 2
+    try:
 
-    #yml = yaml.YAML()
-    #yml.preserve_quotes = True
-    #DATA = yml.load(filename)
+        method = 2
 
-    with open(filename, "r") as yamlfile:
-        DATA = yaml.load(yamlfile, Loader=yaml.FullLoader)
+        #yml = yaml.YAML()
+        #yml.preserve_quotes = True
+        #DATA = yml.load(filename)
 
-    if method == 1:
-        fullpath = convertXpathToDictPath(path + '/' + variable)
-        parentpath = convertXpathToDictPath(path)
-        arrayvar = convertXpathToDictVariable(variable, value)
+        with open(filename, "r") as yamlfile:
+            DATA = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
-        if validate_dict_path(fullpath)[0] and not new_element:
-            ret = update_dict_element(DATA, fullpath, value)
-        elif new_array_field:
-            ret = write_new_dict_element(DATA, parentpath, arrayvar)
+        if method == 1:
+            fullpath = convertXpathToDictPath(path + '/' + variable)
+            parentpath = convertXpathToDictPath(path)
+            arrayvar = convertXpathToDictVariable(variable, value)
+
+            if validate_dict_path(fullpath)[0] and not new_element:
+                ret = update_dict_element(DATA, fullpath, value)
+            elif new_array_field:
+                ret = write_new_dict_element(DATA, parentpath, arrayvar)
+            else:
+                ret = write_new_dict_element(DATA, parentpath, value, variable)
         else:
-            ret = write_new_dict_element(DATA, parentpath, value, variable)
-    else:
-        ret = setnodeValuebyXPath(DATA, path + '/' + variable, value, True, action)
+            ret = setnodeValuebyXPath(DATA, path + '/' + variable, value, True, action)
 
-    #DATA=yaml.normalise(DATA)
-    #yml.dump(DATA, filename)
-    #yaml.default_flow_style = False
-    with open(filename, 'w') as yamlfile:
-        yaml.dump(DATA, yamlfile, default_style=None, default_flow_style=False)
-        #yamlfile.close()
-        #lines = [line.strip() for line in file.readlines() if len(line.strip()) != 0]
+        #DATA=yaml.normalise(DATA)
+        #yml.dump(DATA, filename)
+        #yaml.default_flow_style = False
+        with open(filename, 'w') as yamlfile:
+            yaml.dump(DATA, yamlfile, default_style=None, default_flow_style=False)
+            #yamlfile.close()
+            #lines = [line.strip() for line in file.readlines() if len(line.strip()) != 0]
 
-        removeblanklines(filename)
+            removeblanklines(filename)
 
-    return ret
+        return ret
+
+    except Exception as e:
+        log('Setconf error : ' + repr(e))
+        return False
 
 
 def readyaml2(filename, section, variable):
@@ -258,7 +266,8 @@ def writeyamlalternate(yamlfile, xpath, variable, value):
 
         return True
 
-    except:
+    except Exception as e:
+        log('Setconf error : ' + repr(e))
         return False
 
 def getdeepersection(yamllines, xpath):

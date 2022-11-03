@@ -3,7 +3,7 @@ import json
 from dictpath_main import get_dict_item, update_dict_element, write_new_dict_element, convertXpathToDictPath, convertXpathToDictVariable
 from dictpath_utils import validate_dict_path
 #from settings import readfilecontent
-
+from journal import log
 
 #https://github.com/StephenDiscenza/jsonpath-lite-for-python
 
@@ -25,7 +25,8 @@ def readjson(filename, path, variable):
         ret = get_dict_item(DATA, fullpath)
         return ret
 
-    except:
+    except Exception as e:
+        log('Setconf error : ' + repr(e))
         return ""
 
 
@@ -63,46 +64,51 @@ def readjson(filename, path, variable):
 
 def writejson(filename, path, variable, value, new_element=False, new_array_field=False):
 
-    #path = '/menu/popup/menuitem[value="Open"].onclick'
-    fullpath = convertXpathToDictPath(path + '/' + variable)
-    parentpath = convertXpathToDictPath(path)
-    arrayvar = convertXpathToDictVariable(variable, value)
+    try:
 
-    #ct = readfilecontent(filename)
-    #ct = '''
-    #{
-    #"Transaction_1": {"Name":"Magnolia","Location":"Ayilon male","Amount":289,"Date":"5/5/18"},
-    #"Transaction_2": {"Name":"Landver","Location":"Cinima-city Ramat-hashron","Amount":15,"Date":"15/5/18"},
-    #"Transaction_3": {"Name":"Superfarm","Location":"Shivat-hacochvim male","Amount":199,"Date":"7/5/18"},
-    #"Transaction_4": {"Name":"Printing solutions","Location":"Afeka tel-aviv","Amount":16,"Date":"25/5/18"}
-    #}'''
-    #print(ct)
+        #path = '/menu/popup/menuitem[value="Open"].onclick'
+        fullpath = convertXpathToDictPath(path + '/' + variable)
+        parentpath = convertXpathToDictPath(path)
+        arrayvar = convertXpathToDictVariable(variable, value)
 
-    #DATA = json.loads(ct)
-    #print(DATA)
-    with open(filename, 'r') as f:
-        DATA = json.load(f)
+        #ct = readfilecontent(filename)
+        #ct = '''
+        #{
+        #"Transaction_1": {"Name":"Magnolia","Location":"Ayilon male","Amount":289,"Date":"5/5/18"},
+        #"Transaction_2": {"Name":"Landver","Location":"Cinima-city Ramat-hashron","Amount":15,"Date":"15/5/18"},
+        #"Transaction_3": {"Name":"Superfarm","Location":"Shivat-hacochvim male","Amount":199,"Date":"7/5/18"},
+        #"Transaction_4": {"Name":"Printing solutions","Location":"Afeka tel-aviv","Amount":16,"Date":"25/5/18"}
+        #}'''
+        #print(ct)
 
-    print(fullpath)
+        #DATA = json.loads(ct)
+        #print(DATA)
+        with open(filename, 'r') as f:
+            DATA = json.load(f)
 
+        #print(fullpath)
 
-    #print(path)
-    #path = '$.menu.popup.menuitem[?value="Open"].onclick'
-    #path = '$.menu.popup.menuitem[?0].onclick'
-    #expected_result = True
-    #assert get_json_item(DATA, path) == expected_result, f'Did not find {str(expected_result)} at {path}'
+        #print(path)
+        #path = '$.menu.popup.menuitem[?value="Open"].onclick'
+        #path = '$.menu.popup.menuitem[?0].onclick'
+        #expected_result = True
+        #assert get_json_item(DATA, path) == expected_result, f'Did not find {str(expected_result)} at {path}'
 
-    if validate_dict_path(fullpath)[0] and not new_element:
-        ret = update_dict_element(DATA, fullpath, value)
-    elif new_array_field:
-        ret = write_new_dict_element(DATA, parentpath, arrayvar)
-    else:
-        ret = write_new_dict_element(DATA, parentpath, value, variable)
+        if validate_dict_path(fullpath)[0] and not new_element:
+            ret = update_dict_element(DATA, fullpath, value)
+        elif new_array_field:
+            ret = write_new_dict_element(DATA, parentpath, arrayvar)
+        else:
+            ret = write_new_dict_element(DATA, parentpath, value, variable)
 
-    with open(filename, "w") as jsonfile:
-        json.dump(DATA, jsonfile, indent=2)
+        with open(filename, "w") as jsonfile:
+            json.dump(DATA, jsonfile, indent=2)
 
-    return ret
+        return ret
+
+    except Exception as e:
+        log('Setconf error : ' + repr(e))
+        return False
 
 def createjsontest():
     article_info = {"menu": {

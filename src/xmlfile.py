@@ -6,6 +6,7 @@
 from typing import Optional
 
 from lxml import etree as et
+from journal import log
 
 
 def readxml(filename, path, variable):
@@ -17,20 +18,26 @@ def readxml(filename, path, variable):
 #The following example selects the text from all the price nodes:
 #/bookstore/book/price[text()]
 
-    tree = et.parse(filename)
-    tags = tree.xpath(path + "/" + variable)
-    cnt = len(tags)
+    try:
 
-    ret = ""
-    if cnt == 0:
-        ret = "error: xpath '" + path + "/" + variable + "' does not exist."
-    elif cnt == 1:
-        ret = tags[0].text
-    elif cnt > 1:
-        for tag in tags:
-            ret = ret + tag.text + ";"
+        tree = et.parse(filename)
+        tags = tree.xpath(path + "/" + variable)
+        cnt = len(tags)
 
-    return ret
+        ret = ""
+        if cnt == 0:
+            ret = "error: xpath '" + path + "/" + variable + "' does not exist."
+        elif cnt == 1:
+            ret = tags[0].text
+        elif cnt > 1:
+            for tag in tags:
+                ret = ret + tag.text + ";"
+
+        return ret
+
+    except Exception as e:
+        log('Setconf error : ' + repr(e))
+        return ""
 
 
 def writexml(filename, path, variable, value, new_element=False):
@@ -91,8 +98,10 @@ def writexml(filename, path, variable, value, new_element=False):
 
         else:
             return "Unable to perform the action"
-    except:
-        return "Error occured"
+
+    except Exception as e:
+        log('Setconf error : ' + repr(e))
+        return False
 
 
 def indent_xml(element: et.Element, level: int = 0, is_last_child: bool = True) -> None:

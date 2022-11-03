@@ -2,6 +2,9 @@ from configparser import ConfigParser
 # https://coderzcolumn.com/tutorials/python/configparser-simple-guide-to-create-and-parse-configuration-files
 # Get the configparser object
 #config_object = ConfigParser()
+
+from journal import log
+
 dummy_section = "dummy_top_for_no_section_values_xxx"
 
 
@@ -45,11 +48,13 @@ def readconf(filename, section, variable, delimiters_list="=,:"):
         value = section_object[variable]
         return value
 
-    except Exception:
+    except Exception as e:
+        log('Setconf error : ' + repr(e))
         return ""
 
 
 def writeconf(filename, section, variable, value, delimiters_list="=,:", delimiter_spaces=True):
+
     try:
 
         #read_section(filename, section)
@@ -88,7 +93,8 @@ def writeconf(filename, section, variable, value, delimiters_list="=,:", delimit
         else:
             return True
 
-    except Exception:
+    except Exception as e:
+        log('Setconf error : ' + repr(e))
         return False
 
 
