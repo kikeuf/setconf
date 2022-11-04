@@ -22,7 +22,7 @@ from dictpath_main import get_dict_item, update_dict_element, write_new_dict_ele
     convertXpathToDictVariable
 from dictpath_utils import validate_dict_path
 from settings import removeblanklines
-from dict import getnodeValuebyXPath, getnodeObjectbyXPath, setnodeValuebyXPath
+from dict import getnodeValuebyXPath, getnodeObjectbyXPath, setnodeValuebyXPath, countnodeListbyXPath
 from journal import log
 
 
@@ -129,6 +129,20 @@ def writeyaml_x(filename, path, variable, value, new_element=False, new_array_fi
 
     ret = True
     return ret
+
+def countyamlelements(filename, path):
+
+    try:
+
+        with open(filename, "r") as yamlfile:
+            DATA = yaml.load(yamlfile, Loader=yaml.FullLoader)
+
+        cnt = countnodeListbyXPath(DATA, path)
+        return cnt
+
+    except:
+
+        return 0
 def writeyaml(filename, path, variable, value, new_element=False, new_array_field=False, action='update'):
 
     try:

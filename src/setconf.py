@@ -29,8 +29,12 @@ def setconfig():
             value = cf.readconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
             return value
         elif cfg.arg_filetype == 'yaml' or cfg.arg_filetype == 'yaml2':
-            value = yf.readyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
-            return value
+            if cfg.arg_action == 'count':
+                value = yf.countyamlelements(cfg.arg_conffile, cfg.arg_section_path)
+                return value
+            else:
+                value = yf.readyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
+                return value
         elif cfg.arg_filetype == 'xml':
             value = xf.readxml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
             return value

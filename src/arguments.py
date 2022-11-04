@@ -65,7 +65,7 @@ def translate_args():
                 if cfg.arg_action == "":
                     a = a + 1
                     cfg.arg_action = args[a].lower()
-                    if cfg.arg_action != "update" and cfg.arg_action != "append" and cfg.arg_action != "remove":
+                    if cfg.arg_action != "update" and cfg.arg_action != "append" and cfg.arg_action != "remove" and cfg.arg_action != "count":
                         return "error: unknown action"
                 else:
                     return "error: conflicted arguments for action"
@@ -238,7 +238,7 @@ def translate_args():
             cfg.arg_value = env.getenvvar(default_env)
         elif cfg.arg_value[0:1] == "$":
             cfg.arg_value = env.getenvvar(cfg.arg_value[1:])
-            
+
         if cfg.arg_variable[0:1] == "$":
             cfg.arg_variable = env.getenvvar(cfg.arg_variable[1:])
 

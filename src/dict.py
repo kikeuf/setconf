@@ -32,7 +32,28 @@ def getnodebyXPath(root, path, ForceNodeCreation = False):
     else:
         return nNode, None, pNode, name
 
-def setnodeValuebyXPath(root, path, value, ForceNodeCreation = False, action = "update"):
+def countnodeListbyXPath(root, path):
+
+    try:
+        ret = getnodebyXPath(root, path)
+        id = ret[1]
+        nNode = ret[0]
+        pNode = ret[2]
+        name = ret[3]
+
+        if not (pNode is None):
+            if isinstance(pNode[name], list):
+                 return len(pNode[name])
+            else:
+                return 1
+        else:
+            return 0
+
+    except:
+        return 0
+
+
+def setnodeValuebyXPath(root, path, value, ForceNodeCreation=False, action="update"):
 
     try:
         ret = getnodebyXPath(root, path, ForceNodeCreation)
