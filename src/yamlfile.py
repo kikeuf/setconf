@@ -384,7 +384,10 @@ def yamlchangevalue(yamllines, xpath, value):
                     # on vérifie s'il s'agit d'une liste, auquel cas on ajoute la valeur en fin de liste
                     ret = countlistlines(yamllines, line_count)
                     if ret[0] > 0:
-                        buf_value = ret[1] + "- " + value + '\n'
+                        if value[0] == "#":
+                            buf_value = ret[1] + value + '\n'
+                        else:
+                            buf_value = ret[1] + "- " + value + '\n'
                         buf_insertline = line_count + ret[0]
 
                     nline = line
@@ -428,7 +431,7 @@ def countlistlines(lines, index):
         i = index
         idt = ''
 
-         while not end_of_list:
+        while not end_of_list:
             mstr=lines[i].strip()
             if len(mstr) > 0:
                 char = mstr[0]
