@@ -269,7 +269,6 @@ def writeyamlalternate(yamlfile, xpath, variable, value):
         #if not sectionexists(yamlfile, xpath + '/' + variable):
         #    createsection(lines, xpath, variable, value)
 
-
         newcontent = yamlchangevalue(lines, xpath + '/' + variable, value)
 
         if newcontent != '' and newcontent != content:
@@ -429,19 +428,26 @@ def countlistlines(lines, index):
         i = index
         idt = ''
 
-        while not end_of_list:
-            char = lines[i].strip()[0]
-            match char:
-                case '-':
-                    if e_cnt == 0:
-                        idt = getindent(lines[i])
-                    e_cnt += 1
-                    i += 1
-                case '#':
-                    c_cnt += 1
-                    i += 1
-                case _:
+         while not end_of_list:
+            mstr=lines[i].strip()
+            if len(mstr) > 0:
+                char = mstr[0]
+                match char:
+                    case '-':
+                        if e_cnt == 0:
+                            idt = getindent(lines[i])
+                        e_cnt += 1
+                        i += 1
+                    case '#':
+                        c_cnt += 1
+                        i += 1
+                    case _:
+                        end_of_list = True
+                if i >= len(lines):
                     end_of_list = True
+            else:
+                end_of_list = True
+
         if e_cnt == 0:
             return 0
         else:
