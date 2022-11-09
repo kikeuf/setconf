@@ -7,6 +7,9 @@ from journal import log
 
 #https://github.com/StephenDiscenza/jsonpath-lite-for-python
 
+#-------------------------------------------------
+# Read and write json files type
+#-------------------------------------------------
 
 def readjson(filename, path, variable):
 
@@ -110,6 +113,9 @@ def writejson(filename, path, variable, value, new_element=False, new_array_fiel
         log('Setconf error : ' + repr(e))
         return False
 
+#-------------------------------------------------
+# Test and archives functions
+#-------------------------------------------------
 def createjsontest():
     article_info = {"menu": {
   "id": "file",

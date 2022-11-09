@@ -1,9 +1,7 @@
 
 import os
 from sys import platform
-from settings import write_env_file, read_env_file
-
-
+from common import write_env_file, read_env_file
 
 def setenvvar(varname, value):
    try:

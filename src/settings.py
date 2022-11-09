@@ -2,7 +2,6 @@
 import os
 from conffile import writeconf, readconf, writetext
 from sys import platform
-import environment as env
 
     # montage variable commune déjà existantes en public
     #global arg_command
@@ -51,92 +50,6 @@ def print_args():
     print("no space around delimiters : " + arg_space_around_delimiters)
     print("force new tag : " + arg_newtag)
     #print("environment variable : " + arg_envvar)
-
-def removeblanklines(filename):
-    with open(filename) as reader, open(filename, 'r+') as writer:
-        for line in reader:
-            if line.strip():
-                writer.write(line)
-        writer.truncate()
-
-def create_env_file():
-    if env_section == "":
-        writefile(env_file, '', True)
-    else:
-        writefile(env_file, '[' + env_section + ']', True)
-
-def write_env_file(env_name, value):
-
-    if not os.path.exists(env_file):
-        create_env_file()
-
-    return writeconf(env_file, env_section, env_name, value)
-
-def read_env_file(env_name):
-    return readconf(env_file, env_section, env_name)
-
-def writefile(filename, text, erase_before=False):
-
-    try:
-
-        if erase_before:
-            deletefile(filename)
-
-        f = open(filename, 'w')
-        # Writing a string to file
-        f.write(text)
-        f.close()
-
-        return True
-
-    except:
-        return False
-
-def deletefile(filename):
-
-    try:
-        os.remove(filename)
-        return True
-
-    except:
-        return False
-
-def readfile(filename):
-
-    try:
-        f = open(filename, 'r')
-        ret = f.readline()
-        return ret
-
-    except:
-        return ""
-
-import os
-
-def readfilecontent(filename):
-
-    data = ""
-    if os.path.isfile(filename):
-        file = open(filename, "r")
-        data = str(file.read())
-        file.close()
-
-    return data
-
-def isnumber(value):
-    try:
-        ret = int(value)
-        return True
-    except:
-        return False
-
-def writelisttofile(Filename, MyList):
-
-    text=""
-    for lst in MyList:
-        text += lst   # + '\n'
-
-    writefile(Filename, text, True)
 
 def showhelp():
     print("setconf [-r][-w] [-a action] [-t type_of_file] -f filename [-p path_of_variable] [–k variable] [-v value] [-l list_of_delimiters] [-nospace] [-n] [-h]")

@@ -6,57 +6,44 @@
 
 #import yaml
 #import ruamel.yaml as yaml
-import json
+#import json
 #import sys
 #from dictpath_main import get_dict_item, update_dict_element, write_new_dict_element, convertXpathToDictPath, convertXpathToDictVariable
 #from dictpath_utils import validate_dict_path
-from settings import removeblanklines, writelisttofile
-# import ruamel.yaml as yaml
+
+#import ruamel.yaml as yaml
+#from pathlib import Path
 
 import json
 import yaml
-import re
+import TextLines as txt
 
 # import sys
 from dictpath_main import get_dict_item, update_dict_element, write_new_dict_element, convertXpathToDictPath, \
     convertXpathToDictVariable
 from dictpath_utils import validate_dict_path
-from settings import removeblanklines
 from dict import getnodeValuebyXPath, getnodeObjectbyXPath, setnodeValuebyXPath, countnodeListbyXPath
+from common import removeblanklines, writelisttofile, getstringafter
 from journal import log
 
-import TextLines as txt
+#-------------------------------------------------
+# Read and write yaml files type
+#-------------------------------------------------
 
+shift_indent = '  '
+def countyamlelements(filename, path):
 
-#from pathlib import Path
+    try:
 
-def createyamltest():
+        with open(filename, "r") as yamlfile:
+            DATA = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
-    article_info = [
-        {
-            'Details': {
-                'domain': 'www.tutswiki.com',
-                'language': 'python',
-                'date': '11/09/2020'
-            }
-        }
-    ]
-    fi='d:\config.yaml'
-    with open(fi, 'w') as yamlfile:
-        data = yaml.dump(article_info, yamlfile)
-        #yamlfile.close()
-        #print("Write successful")
+        cnt = countnodeListbyXPath(DATA, path)
+        return cnt
 
-def dumpyaml(filename,section):
+    except:
 
-    article_info = {
-            section
-        }
-    with open(filename, 'w') as yamlfile:
-
-        data = yaml.dump(article_info, yamlfile)
-        yamlfile.close()
-        #print('section dump')
+        return 0
 
 def readyaml(filename, path, variable):
 
@@ -74,77 +61,6 @@ def readyaml(filename, path, variable):
         log('Setconf error : ' + repr(e))
         return ""
 
-def writeyaml_x(filename, path, variable, value, new_element=False, new_array_field=False):
-
-
-    #yml = yaml.YAML()
-    #yml.preserve_quotes = True
-    #DATA = yml.load(filename)
-
-    #print(DATA)
-
-    with open(filename, "r") as yamlfile:
-        DATA = yaml.load(yamlfile, Loader=yaml.FullLoader)
-
-    fullpath = convertXpathToDictPath(path + '/' + variable)
-    parentpath = convertXpathToDictPath(path)
-    arrayvar = convertXpathToDictVariable(variable, value)
-    #testval = DATA["autoinstall"]["ssh_keys"]["rsa_private"]
-    #testval = getchildnode(DATA["autoinstall"], "version2", True)
-
-    new_element = False
-    new_array_field = True
-
-    curNode = getnodeObjectbyXPath(DATA, "/autoinstall/apt/packages2", new_element)
-
-    #with open(filename, 'w') as yamlfile:
-    #    yaml.dump(DATA, yamlfile)
-    #with open(filename, "r") as yamlfile:
-    #    DATA = yaml.load(yamlfile, Loader=yaml.FullLoader)
-    #print(str(DATA))
-
-    curNode = getnodeObjectbyXPath(DATA, "/autoinstall/apt/packages2", False)
-
-    #If the node wasn't found and the auto-creation was enabled, yaml must be reparsed to get the node
-    #if curNode is None and new_element:
-    #    curNode = getnodeObjectbyXPath(DATA, "/autoinstall/apt/packages2", False)
-    #curNode = getnodeObjectbyXPath(DATA, path + '/' - variable, False)
-    print(curNode)
-
-    if new_array_field:
-        curNode.append(value)
-    else:
-        curNode = value
-
-    #curNodeValue = getnodeValuebyXPath(DATA, "/autoinstall/apt/packages[3]", False)
-    #print(curNodeValue)
-
-    #if validate_dict_path(fullpath)[0] and not new_element:
-    #    ret = update_dict_element(DATA, fullpath, value)
-    #elif new_array_field:
-    #    ret = write_new_dict_element(DATA, parentpath, arrayvar)
-    #else:
-    #    ret = write_new_dict_element(DATA, parentpath, value, variable)
-
-    with open(filename, 'w') as yamlfile:
-        yaml.dump(DATA, yamlfile, default_flow_style=False, sort_keys=False)
-
-    ret = True
-    return ret
-
-def countyamlelements(filename, path):
-
-    try:
-
-        with open(filename, "r") as yamlfile:
-            DATA = yaml.load(yamlfile, Loader=yaml.FullLoader)
-
-        cnt = countnodeListbyXPath(DATA, path)
-        return cnt
-
-    except:
-
-        return 0
 def writeyaml(filename, path, variable, value, new_element=False, new_array_field=False, action='update'):
 
     try:
@@ -189,73 +105,6 @@ def writeyaml(filename, path, variable, value, new_element=False, new_array_fiel
         return False
 
 
-def readyaml2(filename, section, variable):
-
-    try:
-
-        with open(filename, "r") as yamlfile:
-            data = yaml.load(yamlfile, Loader=yaml.FullLoader)
-            #print(data)
-
-            pa = (section + '/' + variable).split('/')
-            obj = data
-            for p in pa:
-                if p != '':
-                    try:
-                        obj = obj[p]
-                    except TypeError:
-                        obj = obj[int(p)]
-            #print(obj)
-
-            #value = data[section][variable]
-
-        return obj
-
-    except Exception:
-        return ""
-
-def writeyaml2(filename, section, variable, value):
-
-    try:
-
-        if not sectionexists(filename, section):
-            dumpyaml(filename, section)
-            return False
-
-        with open(filename, "r") as yamlfile:
-            data = yaml.load(yamlfile, Loader=yaml.FullLoader)
-            data[0][section][variable] = value
-            yamlfile.close()
-
-        with open(filename, 'w') as yamlfile:
-            data1 = yaml.dump(data, yamlfile)
-            yamlfile.close()
-
-        return True
-
-    except Exception:
-        return False
-
-def sectionexists(filename,section):
-    try:
-        with open(filename, "r") as yamlfile:
-            data = yaml.load(yamlfile, Loader=yaml.FullLoader)
-            s = data[0][section]
-            yamlfile.close()
-
-        return True
-
-    except Exception:
-        return False
-
-def yamltojson(yamlfile, jsonfile):
-    with open(yamlfile, 'r') as file:
-        configuration = yaml.safe_load(file)
-
-    with open(jsonfile, 'w') as json_file:
-        json.dump(configuration, json_file)
-
-
 def writeyamlalternate(yamlfile, xpath, variable, value):
 
     try:
@@ -296,17 +145,56 @@ def writeyamlalternate(yamlfile, xpath, variable, value):
         log('Setconf error : ' + repr(e))
         return False
 
-def descriptLines(Lines):
 
-    TextLines = txt.TextLines()
-    level = 0
-    listid = 0
-    pindent = 0
-    for ln in Lines:
-        indent = len(getindent(ln))
+def createsection(yamllines, xpath, variable, value):
 
-        line = txt.TextLine(ln, '', '', 0, 0)
-        txt.Lines.append(line)
+    fpath = xpath + '/' + variable
+    ret = getdeepersection(yamllines, fpath)
+    idx = ret[0]
+    pindent = ret[1]
+    valid_path = ret[2]
+
+    if idx <= 0:
+        return yamllines
+
+    missing_path = getstringafter(fpath, valid_path)
+    missings = missing_path.split('/')
+
+    cnt = 0
+    max = len(missings)
+    for missing in missings:
+        cnt += 1
+
+        if missing != '':
+            idt = getindent(yamllines[idx])
+            if len(idt) > len(pindent):
+                pindent = idt
+            else:
+                pindent += shift_indent
+
+            insert_idx = getLastLineindented(yamllines, idx, len(pindent))
+
+            if cnt == max:
+                yamllines.insert(insert_idx, pindent + missing + ":" + '\n')
+                #yamllines.insert(insert_idx, pindent + missing + ": " + value + '\n')
+                return yamllines
+            else:
+                yamllines.insert(insert_idx, pindent + missing + ":" + '\n')
+                idx = insert_idx + 1
+
+    return yamllines
+def sectionexists(filename, section):
+    try:
+        with open(filename, "r") as yamlfile:
+            data = yaml.load(yamlfile, Loader=yaml.FullLoader)
+
+        s = data[0][section]
+        #yamlfile.close()
+
+        return True
+
+    except Exception:
+        return False
 def getdeepersection(yamllines, xpath):
 
     elements = xpath.split('/')
@@ -340,44 +228,17 @@ def getdeepersection(yamllines, xpath):
 
     return insert_line, pindent, valid_path
 
-def createsection(yamllines, xpath, variable, value):
+def descriptLines(Lines):
 
-    fpath = xpath + '/' + variable
-    ret = getdeepersection(yamllines, fpath)
-    idx = ret[0]
-    pindent = ret[1]
-    valid_path = ret[2]
+    TextLines = txt.TextLines()
+    level = 0
+    listid = 0
+    pindent = 0
+    for ln in Lines:
+        indent = len(getindent(ln))
 
-    if idx <= 0:
-        return yamllines
-
-    missing_path = getstringafter(fpath, valid_path)
-    missings = missing_path.split('/')
-
-    cnt = 0
-    max = len(missings)
-    for missing in missings:
-        cnt += 1
-
-        if missing != '':
-            idt = getindent(yamllines[idx])
-            if len(idt) > len(pindent):
-                pindent = idt
-            else:
-                pindent += '  '
-
-            insert_idx = getLastLineindented(yamllines, idx, len(pindent))
-
-            if cnt == max:
-                yamllines.insert(insert_idx, pindent + missing + ":" + '\n')
-                #yamllines.insert(insert_idx, pindent + missing + ": " + value + '\n')
-                return yamllines
-            else:
-                yamllines.insert(insert_idx, pindent + missing + ":" + '\n')
-                idx = insert_idx + 1
-
-    return yamllines
-
+        line = txt.TextLine(ln, '', '', 0, 0)
+        txt.Lines.append(line)
 def getLastLineindented(lines, start_idx, indent_len):
 
     lastline = len(lines)
@@ -394,100 +255,6 @@ def getLastLineindented(lines, start_idx, indent_len):
 
     return idx_line
 
-
-
-def yamlchangevalue_sav(yamllines, xpath, value):
-
-    elements = xpath.split('/')
-    i = 0
-    found = False
-    ntext = ""
-    nline = ""
-    max = len(elements)
-    line_count = 0
-    buf_value = ""
-    buf_insertline = -1
-    #line_idx = 0
-
-    for line in yamllines:
-        #line_idx += 1
-        line_count += 1
-        if elements[i] == '':
-            i += 1
-        el = elements[i] + ":"
-        pos = line.find(el)
-        indent = line[0:pos]
-        if pos != -1 and not found:
-            i += 1
-            if i == max:
-                found = True
-                i = 0
-
-                rvalue = getstringafter(line, el).strip()
-                lst_ret = countlistlines(yamllines, line_count)
-                if rvalue.strip() == "|":
-                    #C'est une chaine de caractères sur plusieurs lignes, dans ce cas on ignore la mise à jour
-                    nline = line
-
-                elif rvalue != '':
-                    print(el)
-                    if rvalue[0:1] == '-':
-                        xvalue = autoCRLF(rvalue, indent + '  ', False)
-                        mvalue = '\n' + xvalue[0]
-                        line_count += xvalue[1]
-                    else:
-                        mvalue = value + '\n'
-
-                    nline = indent + el + ' ' + mvalue
-
-                elif lst_ret[0] > 0:
-                    print(value)
-                    print(line_count)
-                    xvalue = autoCRLF(rvalue, indent + '  ', False)
-                    mvalue = '\n' + xvalue[0]
-
-                    if value[0] == "#":
-                        buf_value = lst_ret[1] + value + '\n'
-                    elif value[0:2] == '- ':
-                        buf_value = lst_ret[1] + mvalue + '\n'
-                        line_count += xvalue[1]
-                    else:
-                        buf_value = lst_ret[1] + "- " + mvalue + '\n'
-                        line_count += xvalue[1]
-
-                    buf_insertline = line_count + lst_ret[0]
-
-                else:
-
-                    # on vérifie s'il s'agit d'une liste, auquel cas on ajoute la valeur en fin de liste
-                    #if lst_ret[0] > 0:
-                    #    if value[0] == "#":
-                    #        buf_value = lst_ret[1] + value + '\n'
-                    #    else:
-                    #        buf_value = lst_ret[1] + "- " + value + '\n'
-                    #    buf_insertline = line_count + lst_ret[0]
-                    #else:
-                    #    if value[0:3] == '\n-' or value[0:1] == "-":
-                    #        xvalue = autoCRLF(value, indent + '  ')
-                    #        print(xvalue[0])
-                        #nline = indent + el + ' ' + xvalue + '\n'
-
-                    nline = line
-            else:
-                nline = line
-        else:
-            nline = line
-
-        ntext += nline
-        if line_count == buf_insertline and buf_value != '':
-            ntext += buf_value
-
-        #print(buf_value)
-        #print('----')
-        #print(autoCRLF(buf_value, indent))
-
-    #print(ntext)
-    return ntext
 
 
 def yamlchangevalue(yamllines, xpath, value):
@@ -527,10 +294,10 @@ def yamlchangevalue(yamllines, xpath, value):
                     #Il s'agit bien d'une liste, on recherche le dernier élément de la liste pour insérer la valeur
                     if lst_ret[0] > 0:
                         line_idx += lst_ret[0]
-                        indent = getindent(yamllines[line_idx])
+                        indent = lst_ret[1]    #getindent(yamllines[line_idx])
                         islist = True
                     elif value[0:1] == '-':
-                        indent = getindent(yamllines[line_idx]) + '  '
+                        indent = getindent(yamllines[line_idx]) + shift_indent
                         #line_idx += 1
                         islist = True
                     else:
@@ -583,45 +350,17 @@ def autoCRLF(mytext, indent):
         values = mytext.split('\\n')
         i = 0
         for value in values:
-            values[i] = indent + value + chr(10)
+            v = value.strip()
+            if value[0:1] == "-":
+                values[i] = indent + v + chr(10)
+            else:
+                values[i] = indent + shift_indent + v + chr(10)
             i += 1
         return values
     else:
         return indent + mytext + chr(10)
 
-def autoCRLF_sav(mytext, indent, excludefirstlineindent = True):
-    #mytext = mytext.strip()
-    pos = mytext.find('\\n')
-    if pos > 0:
-        ntext = ""
-        values = mytext.split('\\n')
-        i = 0
-        for value in values:
-            i += 1
-            if i == 1 and excludefirstlineindent:
-                ntext += value + '\n'
-            else:
-                ntext += indent + value + '\n'
-        return ntext, i
-    else:
-        return mytext + '\n', 0
-def getstringafter(mystring, matchstring):
 
-    match = (re.search(matchstring, mystring))
-
-    if match != None:
-
-        # getting the starting index using match.start()
-        pos_s = match.start()
-        pos_e = pos_s + len(matchstring)
-
-        return mystring[pos_e:]
-
-        # Getting the start and end index in tuple format using match.span()
-        #print("start and end index", match.span())
-
-    else:
-        return ''
 
 def countlistlines(lines, index):
 
@@ -683,3 +422,257 @@ def getindent(mystring):
 
     return idt
 
+#-------------------------------------------------
+# Test and archived functions
+#-------------------------------------------------
+def createyamltest():
+
+    article_info = [
+        {
+            'Details': {
+                'domain': 'www.tutswiki.com',
+                'language': 'python',
+                'date': '11/09/2020'
+            }
+        }
+    ]
+    fi='d:\config.yaml'
+    with open(fi, 'w') as yamlfile:
+        data = yaml.dump(article_info, yamlfile)
+        #yamlfile.close()
+        #print("Write successful")
+
+def dumpyaml(filename,section):
+
+    article_info = {
+            section
+        }
+    with open(filename, 'w') as yamlfile:
+
+        data = yaml.dump(article_info, yamlfile)
+        yamlfile.close()
+        #print('section dump')
+
+def autoCRLF_sav(mytext, indent, excludefirstlineindent = True):
+    #mytext = mytext.strip()
+    pos = mytext.find('\\n')
+    if pos > 0:
+        ntext = ""
+        values = mytext.split('\\n')
+        i = 0
+        for value in values:
+            i += 1
+            if i == 1 and excludefirstlineindent:
+                ntext += value + '\n'
+            else:
+                ntext += indent + value + '\n'
+        return ntext, i
+    else:
+        return mytext + '\n', 0
+
+
+def yamlchangevalue_sav(yamllines, xpath, value):
+
+    elements = xpath.split('/')
+    i = 0
+    found = False
+    ntext = ""
+    nline = ""
+    max = len(elements)
+    line_count = 0
+    buf_value = ""
+    buf_insertline = -1
+    #line_idx = 0
+
+    for line in yamllines:
+        #line_idx += 1
+        line_count += 1
+        if elements[i] == '':
+            i += 1
+        el = elements[i] + ":"
+        pos = line.find(el)
+        indent = line[0:pos]
+        if pos != -1 and not found:
+            i += 1
+            if i == max:
+                found = True
+                i = 0
+
+                rvalue = getstringafter(line, el).strip()
+                lst_ret = countlistlines(yamllines, line_count)
+                if rvalue.strip() == "|":
+                    #C'est une chaine de caractères sur plusieurs lignes, dans ce cas on ignore la mise à jour
+                    nline = line
+
+                elif rvalue != '':
+                    print(el)
+                    if rvalue[0:1] == '-':
+                        xvalue = autoCRLF(rvalue, indent + shift_indent, False)
+                        mvalue = '\n' + xvalue[0]
+                        line_count += xvalue[1]
+                    else:
+                        mvalue = value + '\n'
+
+                    nline = indent + el + ' ' + mvalue
+
+                elif lst_ret[0] > 0:
+                    print(value)
+                    print(line_count)
+                    xvalue = autoCRLF(rvalue, indent + shift_indent, False)
+                    mvalue = '\n' + xvalue[0]
+
+                    if value[0] == "#":
+                        buf_value = lst_ret[1] + value + '\n'
+                    elif value[0:2] == '- ':
+                        buf_value = lst_ret[1] + mvalue + '\n'
+                        line_count += xvalue[1]
+                    else:
+                        buf_value = lst_ret[1] + "- " + mvalue + '\n'
+                        line_count += xvalue[1]
+
+                    buf_insertline = line_count + lst_ret[0]
+
+                else:
+
+                    # on vérifie s'il s'agit d'une liste, auquel cas on ajoute la valeur en fin de liste
+                    #if lst_ret[0] > 0:
+                    #    if value[0] == "#":
+                    #        buf_value = lst_ret[1] + value + '\n'
+                    #    else:
+                    #        buf_value = lst_ret[1] + "- " + value + '\n'
+                    #    buf_insertline = line_count + lst_ret[0]
+                    #else:
+                    #    if value[0:3] == '\n-' or value[0:1] == "-":
+                    #        xvalue = autoCRLF(value, indent + shift_indent)
+                    #        print(xvalue[0])
+                        #nline = indent + el + ' ' + xvalue + '\n'
+
+                    nline = line
+            else:
+                nline = line
+        else:
+            nline = line
+
+        ntext += nline
+        if line_count == buf_insertline and buf_value != '':
+            ntext += buf_value
+
+        #print(buf_value)
+        #print('----')
+        #print(autoCRLF(buf_value, indent))
+
+    #print(ntext)
+    return ntext
+
+def writeyaml_x(filename, path, variable, value, new_element=False, new_array_field=False):
+
+
+    #yml = yaml.YAML()
+    #yml.preserve_quotes = True
+    #DATA = yml.load(filename)
+
+    #print(DATA)
+
+    with open(filename, "r") as yamlfile:
+        DATA = yaml.load(yamlfile, Loader=yaml.FullLoader)
+
+    fullpath = convertXpathToDictPath(path + '/' + variable)
+    parentpath = convertXpathToDictPath(path)
+    arrayvar = convertXpathToDictVariable(variable, value)
+    #testval = DATA["autoinstall"]["ssh_keys"]["rsa_private"]
+    #testval = getchildnode(DATA["autoinstall"], "version2", True)
+
+    new_element = False
+    new_array_field = True
+
+    curNode = getnodeObjectbyXPath(DATA, "/autoinstall/apt/packages2", new_element)
+
+    #with open(filename, 'w') as yamlfile:
+    #    yaml.dump(DATA, yamlfile)
+    #with open(filename, "r") as yamlfile:
+    #    DATA = yaml.load(yamlfile, Loader=yaml.FullLoader)
+    #print(str(DATA))
+
+    curNode = getnodeObjectbyXPath(DATA, "/autoinstall/apt/packages2", False)
+
+    #If the node wasn't found and the auto-creation was enabled, yaml must be reparsed to get the node
+    #if curNode is None and new_element:
+    #    curNode = getnodeObjectbyXPath(DATA, "/autoinstall/apt/packages2", False)
+    #curNode = getnodeObjectbyXPath(DATA, path + '/' - variable, False)
+    print(curNode)
+
+    if new_array_field:
+        curNode.append(value)
+    else:
+        curNode = value
+
+    #curNodeValue = getnodeValuebyXPath(DATA, "/autoinstall/apt/packages[3]", False)
+    #print(curNodeValue)
+
+    #if validate_dict_path(fullpath)[0] and not new_element:
+    #    ret = update_dict_element(DATA, fullpath, value)
+    #elif new_array_field:
+    #    ret = write_new_dict_element(DATA, parentpath, arrayvar)
+    #else:
+    #    ret = write_new_dict_element(DATA, parentpath, value, variable)
+
+    with open(filename, 'w') as yamlfile:
+        yaml.dump(DATA, yamlfile, default_flow_style=False, sort_keys=False)
+
+    ret = True
+    return ret
+
+
+def readyaml2(filename, section, variable):
+
+    try:
+
+        with open(filename, "r") as yamlfile:
+            data = yaml.load(yamlfile, Loader=yaml.FullLoader)
+            #print(data)
+
+            pa = (section + '/' + variable).split('/')
+            obj = data
+            for p in pa:
+                if p != '':
+                    try:
+                        obj = obj[p]
+                    except TypeError:
+                        obj = obj[int(p)]
+            #print(obj)
+
+            #value = data[section][variable]
+
+        return obj
+
+    except Exception:
+        return ""
+
+def writeyaml2(filename, section, variable, value):
+
+    try:
+
+        if not sectionexists(filename, section):
+            dumpyaml(filename, section)
+            return False
+
+        with open(filename, "r") as yamlfile:
+            data = yaml.load(yamlfile, Loader=yaml.FullLoader)
+            data[0][section][variable] = value
+            yamlfile.close()
+
+        with open(filename, 'w') as yamlfile:
+            data1 = yaml.dump(data, yamlfile)
+            yamlfile.close()
+
+        return True
+
+    except Exception:
+        return False
+
+def yamltojson(yamlfile, jsonfile):
+    with open(yamlfile, 'r') as file:
+        configuration = yaml.safe_load(file)
+
+    with open(jsonfile, 'w') as json_file:
+        json.dump(configuration, json_file)

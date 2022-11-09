@@ -5,30 +5,11 @@ from configparser import ConfigParser
 
 from journal import log
 
+#-------------------------------------------------
+# Read and write conf files type
+#-------------------------------------------------
+
 dummy_section = "dummy_top_for_no_section_values_xxx"
-
-
-def createinitest():
-
-    config_object = ConfigParser()
-
-    # Assume we need 2 sections in the config file, let's call them USERINFO and SERVERCONFIG
-    config_object["USERINFO"] = {
-        "admin": "Chankey Pathak",
-        "loginid": "chankeypathak",
-        "password": "tutswiki"
-    }
-
-    config_object["SERVERCONFIG"] = {
-        "host": "tutswiki.com",
-        "port": "8080",
-        "ipaddr": "8.8.8.8"
-    }
-
-    # Write the above sections to config.ini file
-    with open('d:\config.ini', 'w') as conf:
-        config_object.write(conf)
-
 
 def readconf(filename, section, variable, delimiters_list="=,:"):
     try:
@@ -116,27 +97,9 @@ def read_section(filename, section, delimiters_list="=,:"):
 
     #value = section_object[variable]
 
-def remove_first_line_of_file(filename):
-    try:
-
-        with open(filename, 'r+') as fp:
-            # read an store all lines into list
-            lines = fp.readlines()
-            # move file pointer to the beginning of a file
-            fp.seek(0)
-            # truncate the file
-            fp.truncate()
-
-            # start writing lines except the first line
-            # lines[1:] from line 2 to last line
-            fp.writelines(lines[1:])
-
-        return True
-
-    except Exception:
-        return False
-
-
+#-------------------------------------------------
+# Read and write text files type
+#-------------------------------------------------
 def writetext(filename, text, newtag=False, action='update'):
 
     try:
@@ -175,6 +138,29 @@ def writetext(filename, text, newtag=False, action='update'):
     except Exception:
         return False
 
+
+#-------------------------------------------------
+# Manipulate files
+#-------------------------------------------------
+def remove_first_line_of_file(filename):
+    try:
+
+        with open(filename, 'r+') as fp:
+            # read an store all lines into list
+            lines = fp.readlines()
+            # move file pointer to the beginning of a file
+            fp.seek(0)
+            # truncate the file
+            fp.truncate()
+
+            # start writing lines except the first line
+            # lines[1:] from line 2 to last line
+            fp.writelines(lines[1:])
+
+        return True
+
+    except Exception:
+        return False
 
 def read_lastbyteoffile(filename):
 
@@ -224,3 +210,27 @@ def file_remove_lines(filename, text):
 
     except:
         return ""
+
+#-------------------------------------------------
+# Test and archived functions
+#-------------------------------------------------
+def createinitest():
+
+    config_object = ConfigParser()
+
+    # Assume we need 2 sections in the config file, let's call them USERINFO and SERVERCONFIG
+    config_object["USERINFO"] = {
+        "admin": "Chankey Pathak",
+        "loginid": "chankeypathak",
+        "password": "tutswiki"
+    }
+
+    config_object["SERVERCONFIG"] = {
+        "host": "tutswiki.com",
+        "port": "8080",
+        "ipaddr": "8.8.8.8"
+    }
+
+    # Write the above sections to config.ini file
+    with open('d:\config.ini', 'w') as conf:
+        config_object.write(conf)

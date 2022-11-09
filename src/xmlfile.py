@@ -8,7 +8,9 @@ from typing import Optional
 from lxml import etree as et
 from journal import log
 
-
+#-------------------------------------------------
+# Read and write xml files type
+#-------------------------------------------------
 def readxml(filename, path, variable):
 
 # index = 0 means all tag in the list
@@ -136,6 +138,9 @@ def strip_or_null(text: Optional[str]) -> Optional[str]:
         return text.strip() or None
 
 
+#-------------------------------------------------
+# Test or archived functions
+#-------------------------------------------------
 def readxml_sav(filename, path, variable, index = 1):
 
 # index = 0 means all tag in the list
