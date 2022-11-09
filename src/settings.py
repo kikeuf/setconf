@@ -130,6 +130,14 @@ def isnumber(value):
     except:
         return False
 
+def writelisttofile(Filename, MyList):
+
+    text=""
+    for lst in MyList:
+        text += lst   # + '\n'
+
+    writefile(Filename, text, True)
+
 def showhelp():
     print("setconf [-r][-w] [-a action] [-t type_of_file] -f filename [-p path_of_variable] [–k variable] [-v value] [-l list_of_delimiters] [-nospace] [-n] [-h]")
     print("")

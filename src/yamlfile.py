@@ -10,7 +10,7 @@ import json
 #import sys
 #from dictpath_main import get_dict_item, update_dict_element, write_new_dict_element, convertXpathToDictPath, convertXpathToDictVariable
 #from dictpath_utils import validate_dict_path
-#from settings import removeblanklines
+from settings import removeblanklines, writelisttofile
 # import ruamel.yaml as yaml
 
 import json
@@ -24,6 +24,8 @@ from dictpath_utils import validate_dict_path
 from settings import removeblanklines
 from dict import getnodeValuebyXPath, getnodeObjectbyXPath, setnodeValuebyXPath, countnodeListbyXPath
 from journal import log
+
+import TextLines as txt
 
 
 #from pathlib import Path
@@ -261,21 +263,32 @@ def writeyamlalternate(yamlfile, xpath, variable, value):
         with open(yamlfile, 'r') as file:
             lines = file.readlines()
 
-        with open(yamlfile, 'r') as file:
-            content = file.read()
+        #ajout d'une ligne vide pour se prémunir d'un soucis de saut de ligne sur une écriture en fin de fichier
+        xstr = lines[len(lines)-1].strip()
+        if (len(xstr)) > 0:
+            lines.append(chr(10))
+            writelisttofile(yamlfile, lines)
+            with open(yamlfile, 'r') as file:
+                lines = file.readlines()
 
-        lines = createsection(lines, xpath, variable, value)
+        nlines = createsection(lines, xpath, variable, value)
+
+        xlines = yamlchangevalue(nlines, xpath + '/' + variable, value)
+
+        writelisttofile(yamlfile, xlines)
+
+
 
         #if not sectionexists(yamlfile, xpath + '/' + variable):
         #    createsection(lines, xpath, variable, value)
 
-        newcontent = yamlchangevalue(lines, xpath + '/' + variable, value)
+        #newcontent = yamlchangevalue(nlines, xpath + '/' + variable, value)
 
-        if newcontent != '' and newcontent != content:
-            with open(yamlfile, 'w') as file:
-                file.write(newcontent)
-        else:
-            return False
+        #if newcontent != '' and newcontent != content:
+        #    with open(yamlfile, 'w') as file:
+        #        file.write(newcontent)
+        #else:
+        #    return False
 
         return True
 
@@ -283,6 +296,17 @@ def writeyamlalternate(yamlfile, xpath, variable, value):
         log('Setconf error : ' + repr(e))
         return False
 
+def descriptLines(Lines):
+
+    TextLines = txt.TextLines()
+    level = 0
+    listid = 0
+    pindent = 0
+    for ln in Lines:
+        indent = len(getindent(ln))
+
+        line = txt.TextLine(ln, '', '', 0, 0)
+        txt.Lines.append(line)
 def getdeepersection(yamllines, xpath):
 
     elements = xpath.split('/')
@@ -341,16 +365,38 @@ def createsection(yamllines, xpath, variable, value):
                 pindent = idt
             else:
                 pindent += '  '
+
+            insert_idx = getLastLineindented(yamllines, idx, len(pindent))
+
             if cnt == max:
-                yamllines.insert(idx, pindent + missing + ": " + value + '\n')
+                yamllines.insert(insert_idx, pindent + missing + ":" + '\n')
+                #yamllines.insert(insert_idx, pindent + missing + ": " + value + '\n')
                 return yamllines
             else:
-                yamllines.insert(idx, pindent + missing + ":" + '\n')
-                idx += 1
+                yamllines.insert(insert_idx, pindent + missing + ":" + '\n')
+                idx = insert_idx + 1
 
     return yamllines
 
-def yamlchangevalue(yamllines, xpath, value):
+def getLastLineindented(lines, start_idx, indent_len):
+
+    lastline = len(lines)
+    idx_line = -1
+    idx = start_idx
+    while idx_line == -1:
+        idt = len(getindent(lines[idx]))
+        if idt < indent_len:
+            idx_line = idx
+        elif idx == lastline:
+            idx_line = idx
+        else:
+            idx += 1
+
+    return idx_line
+
+
+
+def yamlchangevalue_sav(yamllines, xpath, value):
 
     elements = xpath.split('/')
     i = 0
@@ -361,8 +407,10 @@ def yamlchangevalue(yamllines, xpath, value):
     line_count = 0
     buf_value = ""
     buf_insertline = -1
+    #line_idx = 0
 
     for line in yamllines:
+        #line_idx += 1
         line_count += 1
         if elements[i] == '':
             i += 1
@@ -374,21 +422,55 @@ def yamlchangevalue(yamllines, xpath, value):
             if i == max:
                 found = True
                 i = 0
+
                 rvalue = getstringafter(line, el).strip()
+                lst_ret = countlistlines(yamllines, line_count)
                 if rvalue.strip() == "|":
                     #C'est une chaine de caractères sur plusieurs lignes, dans ce cas on ignore la mise à jour
                     nline = line
+
                 elif rvalue != '':
-                    nline = indent + el + ' ' + value + '\n'
+                    print(el)
+                    if rvalue[0:1] == '-':
+                        xvalue = autoCRLF(rvalue, indent + '  ', False)
+                        mvalue = '\n' + xvalue[0]
+                        line_count += xvalue[1]
+                    else:
+                        mvalue = value + '\n'
+
+                    nline = indent + el + ' ' + mvalue
+
+                elif lst_ret[0] > 0:
+                    print(value)
+                    print(line_count)
+                    xvalue = autoCRLF(rvalue, indent + '  ', False)
+                    mvalue = '\n' + xvalue[0]
+
+                    if value[0] == "#":
+                        buf_value = lst_ret[1] + value + '\n'
+                    elif value[0:2] == '- ':
+                        buf_value = lst_ret[1] + mvalue + '\n'
+                        line_count += xvalue[1]
+                    else:
+                        buf_value = lst_ret[1] + "- " + mvalue + '\n'
+                        line_count += xvalue[1]
+
+                    buf_insertline = line_count + lst_ret[0]
+
                 else:
+
                     # on vérifie s'il s'agit d'une liste, auquel cas on ajoute la valeur en fin de liste
-                    ret = countlistlines(yamllines, line_count)
-                    if ret[0] > 0:
-                        if value[0] == "#":
-                            buf_value = ret[1] + value + '\n'
-                        else:
-                            buf_value = ret[1] + "- " + value + '\n'
-                        buf_insertline = line_count + ret[0]
+                    #if lst_ret[0] > 0:
+                    #    if value[0] == "#":
+                    #        buf_value = lst_ret[1] + value + '\n'
+                    #    else:
+                    #        buf_value = lst_ret[1] + "- " + value + '\n'
+                    #    buf_insertline = line_count + lst_ret[0]
+                    #else:
+                    #    if value[0:3] == '\n-' or value[0:1] == "-":
+                    #        xvalue = autoCRLF(value, indent + '  ')
+                    #        print(xvalue[0])
+                        #nline = indent + el + ' ' + xvalue + '\n'
 
                     nline = line
             else:
@@ -400,9 +482,129 @@ def yamlchangevalue(yamllines, xpath, value):
         if line_count == buf_insertline and buf_value != '':
             ntext += buf_value
 
+        #print(buf_value)
+        #print('----')
+        #print(autoCRLF(buf_value, indent))
+
     #print(ntext)
     return ntext
 
+
+def yamlchangevalue(yamllines, xpath, value):
+
+    elements = xpath.split('/')
+    i = 0
+    found = False
+    max = len(elements)
+    line_idx = -1
+
+
+    #Pour chaque ligne du fichier yaml
+    for line in yamllines:
+        line_idx += 1
+
+        if elements[i] == '':
+            i += 1
+        el = elements[i] + ":"
+        pos = line.find(el)
+        indent = line[0:pos]
+        islist = False
+        #parcours des éléments XPath jusqu'à trouver la variable dans le bon chemin
+        if pos != -1 and not found:
+            i += 1
+            if i == max:
+                found = True
+                i = 0
+                rvalue = getstringafter(line, el).strip()
+
+                if rvalue.strip() == "|":
+                    #C'est une chaine de caractères sur plusieurs lignes, dans ce cas on ignore la mise à jour -> future évolution
+                    return yamllines
+
+                elif rvalue == '':
+                    #Il n'y a pas de valeur accolée, c'est probablement une liste qui suit
+                    lst_ret = countlistlines(yamllines, line_idx + 1)
+                    #Il s'agit bien d'une liste, on recherche le dernier élément de la liste pour insérer la valeur
+                    if lst_ret[0] > 0:
+                        line_idx += lst_ret[0]
+                        indent = getindent(yamllines[line_idx])
+                        islist = True
+                    elif value[0:1] == '-':
+                        indent = getindent(yamllines[line_idx]) + '  '
+                        #line_idx += 1
+                        islist = True
+                    else:
+                        #print(yamllines[line_idx])
+                        yamllines[line_idx] = getindent(yamllines[line_idx]) + el + ' ' + value + chr(10)
+                        islist = False
+                        return yamllines
+
+                    if islist:
+
+                        if value[0:1] == "#":
+                            line_idx += 1
+                            yamllines.insert(line_idx, indent + value + chr(10))
+                        else:
+
+                            if value[0:1] != '-':
+                                value = '- ' + value
+
+                            values = autoCRLF(value, indent)
+                            for v in values:
+                                line_idx += 1
+                                #print('*******************')
+                                #print(yamllines[line_idx - 1])
+                                #print(yamllines[line_idx])
+                                #print(yamllines[line_idx + 1])
+
+                                #print(len(yamllines))
+                                #print(line_idx)
+                                yamllines.insert(line_idx, v)
+
+                                #print('------------------')
+                                #print(yamllines[line_idx-1])
+                                #print(yamllines[line_idx])
+                                #print(yamllines[line_idx+1])
+
+
+                        return yamllines
+
+                else:
+                    yamllines[line_idx] = getindent(yamllines[line_idx]) + el + ' ' + value + chr(10)
+                    return yamllines
+
+
+    return yamllines
+
+def autoCRLF(mytext, indent):
+
+    pos = mytext.find('\\n')
+    if pos > 0:
+        values = mytext.split('\\n')
+        i = 0
+        for value in values:
+            values[i] = indent + value + chr(10)
+            i += 1
+        return values
+    else:
+        return indent + mytext + chr(10)
+
+def autoCRLF_sav(mytext, indent, excludefirstlineindent = True):
+    #mytext = mytext.strip()
+    pos = mytext.find('\\n')
+    if pos > 0:
+        ntext = ""
+        values = mytext.split('\\n')
+        i = 0
+        for value in values:
+            i += 1
+            if i == 1 and excludefirstlineindent:
+                ntext += value + '\n'
+            else:
+                ntext += indent + value + '\n'
+        return ntext, i
+    else:
+        return mytext + '\n', 0
 def getstringafter(mystring, matchstring):
 
     match = (re.search(matchstring, mystring))
@@ -430,9 +632,10 @@ def countlistlines(lines, index):
         end_of_list = False
         i = index
         idt = ''
+        flg_list = False
 
         while not end_of_list:
-            mstr=lines[i].strip()
+            mstr = lines[i].strip()
             if len(mstr) > 0:
                 char = mstr[0]
                 match char:
@@ -440,19 +643,29 @@ def countlistlines(lines, index):
                         if e_cnt == 0:
                             idt = getindent(lines[i])
                         e_cnt += 1
+                        flg_list = True
                         i += 1
                     case '#':
                         c_cnt += 1
                         i += 1
                     case _:
-                        end_of_list = True
+                        if flg_list:
+                            nidt = getindent(lines[i])
+                            if len(nidt) < len(idt):
+                                flg_list = False
+                            else:
+                                e_cnt += 1
+                                i += 1
+                        if not flg_list:
+                            end_of_list = True
                 if i >= len(lines):
+                    flg_list = False
                     end_of_list = True
             else:
+                flg_list = False
                 end_of_list = True
-
         if e_cnt == 0:
-            return 0
+            return 0, ''
         else:
             return e_cnt + c_cnt, idt
 

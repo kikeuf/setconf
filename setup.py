@@ -10,7 +10,7 @@ if platform == "linux" or platform == "linux2":
 # Metadata goes in setup.cfg. These are here for GitHub's dependency graph.
 setup(
     name="setconf",
-    version="1.0.5",
+    version="1.0.9",
     author='Kikeuf',
     author_email='kikeuf@free.fr',
     license='MIT',

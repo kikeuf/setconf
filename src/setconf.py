@@ -70,6 +70,91 @@ def setconfig():
         return
 
 
+def setconfig_new():
+    match cfg.arg_filetype:
+
+        case 'conf':
+            if cfg.arg_command == 'read':
+                value = cf.readconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
+                return value
+            elif cfg.arg_command in ['write', 'update', 'append']:
+                ret = cf.writeconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_delimiters, cfg.arg_space_around_delimiters)
+            elif cfg.arg_command == 'delete':
+                ret = cf.writeconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, '', cfg.arg_delimiters, cfg.arg_space_around_delimiters)
+            else:
+                return
+
+        case 'yaml':
+            if cfg.arg_command == 'count':
+                value = yf.countyamlelements(cfg.arg_conffile, cfg.arg_section_path)
+                return value
+            elif cfg.arg_command == 'read':
+                value = yf.readyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
+                return value
+            elif cfg.arg_command == 'append':  #add a new item to list
+                ret = yf.writeyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, False, True, 'append')
+            elif cfg.arg_command == 'update':  #update the value of a variable, create the variable if it doesn't exist
+                ret = yf.writeyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, False, False)
+            elif cfg.arg_command == 'delete':  #delete variable and its value
+                ret = yf.writeyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, False, False, 'remove')
+            elif cfg.arg_command == 'write':   #force new tag even if same variable already exists
+                ret = yf.writeyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, True, True)
+            else:
+                return
+
+        case 'yaml2':
+            if cfg.arg_command == 'count':
+                value = yf.countyamlelements(cfg.arg_conffile, cfg.arg_section_path)
+                return value
+            elif cfg.arg_command == 'read':
+                value = yf.readyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
+                return value
+            elif cfg.arg_command in ['write', 'update', 'append']:
+                ret = yf.writeyamlalternate(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value)
+            elif cfg.arg_command == 'delete':
+                ret = yf.writeyamlalternate(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, '')
+            else:
+                return
+
+        case 'json':
+            if cfg.arg_command == 'read':
+                value = jf.readjson(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
+                return value
+            elif cfg.arg_command in ['write', 'append']:
+                ret = jf.writejson(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, True)
+            elif cfg.arg_command == 'update':
+                ret = jf.writejson(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, False)
+
+        case 'xml':
+            if cfg.arg_command == 'read':
+                value = xf.readxml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
+                return value
+            elif cfg.arg_command in ['write', 'append']:
+                ret = jf.writexml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, True)
+            elif cfg.arg_command == 'update':
+                ret = jf.writexml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, False)
+            elif cfg.arg_command == 'delete':
+                ret = jf.writexml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, '', False)
+            else:
+                return
+
+        case 'text':
+            if cfg.arg_command in ['write', 'append']:
+                ret = cf.writetext(cfg.arg_conffile, cfg.arg_value, True, 'append')
+            elif cfg.arg_command == 'update':
+                ret = cf.writetext(cfg.arg_conffile, cfg.arg_value, False)
+            else:
+                return
+
+        case 'dhcp':
+            if cfg.arg_command in ['write', 'update', 'append']:
+                ret = df.add_host(cfg.arg_conffile, cfg.arg_dhcpgroup, cfg.arg_hostname, cfg.arg_macaddress, cfg.arg_ipaddress, cfg.arg_netmask, cfg.arg_server, cfg.arg_bootfile)
+            else:
+                return
+
+        case _:
+            return
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
