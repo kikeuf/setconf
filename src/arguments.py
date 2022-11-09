@@ -34,18 +34,18 @@ def translate_args():
         while a < argcount:
             #print(a)
 
-            if args[a]=="-r": #read
+            if args[a] == "-r": #read
                 if cfg.arg_command == "":
                     cfg.arg_command = "read"
                 else:
                     return "error: conflicted arguments between read and write mode"
-            elif args[a]=="-w": #write
+            elif args[a] == "-w": #write
                 if cfg.arg_command == "":
                     cfg.arg_command = "write"
                 else:
                     return "error: conflicted arguments between read and write mode"
 
-            elif args[a]=="-n": #new tag
+            elif args[a] == "-n": #new tag
                 cfg.arg_newtag = True
 
             #elif args[a]=="-c": #change
@@ -54,7 +54,7 @@ def translate_args():
             #    else:
             #        return "error: conflicted arguments between read, write and replace mode"
             elif args[a] == "-t": #type
-                if cfg.arg_filetype == "":
+                if cfg.arg_filetype == "" and a + 1 < argcount:
                     a = a + 1
                     cfg.arg_filetype = args[a].lower()
                     if cfg.arg_filetype != "json" and cfg.arg_filetype != "xml" and cfg.arg_filetype != "conf" and cfg.arg_filetype != "yaml" and cfg.arg_filetype != "text" and cfg.arg_filetype != "yaml2" and cfg.arg_filetype != "dhcp":
@@ -62,7 +62,7 @@ def translate_args():
                 else:
                     return "error: conflicted arguments for file type"
             elif args[a] == "-a": #action
-                if cfg.arg_action == "":
+                if cfg.arg_action == "" and a + 1 < argcount:
                     a = a + 1
                     cfg.arg_action = args[a].lower()
                     if cfg.arg_action != "update" and cfg.arg_action != "append" and cfg.arg_action != "remove" and cfg.arg_action != "count":
@@ -70,7 +70,7 @@ def translate_args():
                 else:
                     return "error: conflicted arguments for action"
             elif args[a] == "-f": #filename
-                if cfg.arg_conffile == "":
+                if cfg.arg_conffile == "" and a + 1 < argcount:
                     a = a + 1
                     data = args[a]
                     a = argument_workaround(args, a, argcount)
@@ -80,7 +80,7 @@ def translate_args():
                 else:
                     return "error: conflicted arguments for configuration file"
             elif args[a] == "-p": #path or section
-                if cfg.arg_section_path == "":
+                if cfg.arg_section_path == "" and a + 1 < argcount:
                     a = a + 1
                     data = args[a]
                     a = argument_workaround(args, a, argcount)
@@ -91,7 +91,7 @@ def translate_args():
                 else:
                     return "error: conflicted arguments for configuration file"
             elif args[a] == "-k": #key (variable)
-                if cfg.arg_variable == "":
+                if cfg.arg_variable == "" and a + 1 < argcount:
                     a = a + 1
                     data = args[a]
                     a = argument_workaround(args, a, argcount)
@@ -99,7 +99,7 @@ def translate_args():
                 else:
                     return "error: conflicted arguments for variable name"
             elif args[a] == "-v": #value
-                if cfg.arg_value == "":
+                if cfg.arg_value == "" and a + 1 < argcount:
                     a = a + 1
                     data = args[a]
                     a = argument_workaround(args, a, argcount)
@@ -107,20 +107,20 @@ def translate_args():
                 else:
                     return "error: conflicted arguments for value"
             #elif args[a] == "-e": #environment variable
-            #    if cfg.arg_envvar == "":
+            #    if cfg.arg_envvar == "" and a + 1 < argcount:
             #        a = a + 1
             #        cfg.arg_envvar = args[a]
             #    else:
             #        return "error: conflicted arguments for environment variable name"
             #elif args[a] == "-i": #index de liste
-            #    if cfg.arg_listindex == -9999:
+            #    if cfg.arg_listindex == -9999 and a + 1 < argcount:
             #        a = a + 1
             #        cfg.arg_listindex = args[a]
             #    else:
             #        return "error: conflicted arguments for index of list"
             elif args[a] == "-h":
                 helpmode = True
-            elif args[a] == "-l":
+            elif args[a] == "-l" and a + 1 < argcount:
                 a = a + 1
                 if args[a] != "":
                     cfg.arg_delimiters = args[a]
@@ -129,49 +129,49 @@ def translate_args():
                 cfg.arg_space_around_delimiters = False
 
             elif args[a] == "-ip": #ip_address
-                if cfg.arg_ipaddress == "":
+                if cfg.arg_ipaddress == "" and a + 1 < argcount:
                     a = a + 1
                     cfg.arg_ipaddress = args[a]
                 else:
                     return "error: conflicted arguments for ip address"
 
             elif args[a] == "-mask": #netmask
-                if cfg.arg_netmask == "":
+                if cfg.arg_netmask == "" and a + 1 < argcount:
                     a = a + 1
                     cfg.arg_netmask = args[a]
                 else:
                     return "error: conflicted arguments for netmask"
 
             elif args[a] == "-mac": #mac_address
-                if cfg.arg_macaddress == "":
+                if cfg.arg_macaddress == "" and a + 1 < argcount:
                     a = a + 1
                     cfg.arg_macaddress = args[a]
                 else:
                     return "error: conflicted arguments for MAC address"
 
             elif args[a] == "-host": #hostname
-                if cfg.arg_hostname == "":
+                if cfg.arg_hostname == "" and a + 1 < argcount:
                     a = a + 1
                     cfg.arg_hostname = args[a]
                 else:
                     return "error: conflicted arguments for hostname"
 
             elif args[a] == "-server": #next-server
-                if cfg.arg_server == "":
+                if cfg.arg_server == "" and a + 1 < argcount:
                     a = a + 1
                     cfg.arg_server = args[a]
                 else:
                     return "error: conflicted arguments for next server"
 
             elif args[a] == "-group": #DHCP groupname
-                if cfg.arg_dhcpgroup == "":
+                if cfg.arg_dhcpgroup == "" and a + 1 < argcount:
                     a = a + 1
                     cfg.arg_dhcpgroup = args[a]
                 else:
                     return "error: conflicted arguments for DHCP group"
 
             elif args[a] == "-boot": #boot file
-                if cfg.arg_bootfile == "":
+                if cfg.arg_bootfile == "" and a + 1 < argcount:
                     a = a + 1
                     cfg.arg_bootfile = args[a]
                 else:
