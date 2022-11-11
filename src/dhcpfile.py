@@ -32,9 +32,11 @@ def add_host(filename, group, hostname, MacAddress, IPAddress, mask, next_server
             text += "next-server " + next_server + "; "
         if bootfile != "":
             text += "filename " + bootfile + "; "
-        text += "}\n}\n"
+        text += "}\n}"
         group_bloc = text
+
     else:
+
         ret = extract_group_in_group(group_bloc, "host " + hostname)
         group_prefix = ret[0]
         host_bloc = ret[1]
@@ -61,6 +63,9 @@ def add_host(filename, group, hostname, MacAddress, IPAddress, mask, next_server
             host_bloc = text
 
         group_bloc = group_prefix + host_bloc + group_suffix
+
+    if ord(group_bloc[-2]) == 10 and ord(group_bloc[-1]) == 10:
+        group_bloc = group_bloc[:-1]
 
     content = prefix + group_bloc + suffix
 
