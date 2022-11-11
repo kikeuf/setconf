@@ -1,5 +1,5 @@
 import sys
-from os.path import exists as file_exists
+from common import fileexists, createfile
 
 import environment as env
 # from settings import *
@@ -239,7 +239,7 @@ def translate_args():
 
         if cfg.arg_conffile == "" and cfg.arg_filetype == "dhcp":
             dhcpfile = "/etc/dhcp/dhcpd.conf"
-            if file_exists(dhcpfile):
+            if fileexists(dhcpfile):
                 cfg.arg_conffile = dhcpfile
 
         #if cfg.arg_envvar == "":
@@ -293,8 +293,10 @@ def translate_args():
 
         if cfg.arg_conffile == "":
             return "error: configuration file is not specified"
-        elif not file_exists(cfg.arg_conffile):
-            return "error: configuration file cannot be found"
+        elif not fileexists(cfg.arg_conffile):
+            ret = createfile(cfg.arg_conffile)
+            if not ret:
+                return "error: configuration file cannot be found"
 
     except Exception as ex:
         if hasattr(ex, 'message'):

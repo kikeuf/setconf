@@ -1,5 +1,6 @@
 import environment as env
 import re
+from os.path import exists
 
 #-------------------------------------------------
 # Environnement files
@@ -24,6 +25,16 @@ def read_env_file(env_name):
 #-------------------------------------------------
 # File manipulation
 #-------------------------------------------------
+
+def fileexists(filename):
+    return exists(filename)
+
+def createfile(filename):
+    try:
+        file = open(filename, "x")
+        return True
+    except:
+        return False
 
 def writefile(filename, text, erase_before=False):
 

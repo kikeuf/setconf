@@ -10,7 +10,8 @@ import xmlfile as xf
 import yamlfile as yf
 import dhcpfile as df
 from arguments import translate_args
-from dict import testdict
+#from dict import testdict
+
 
 
 #def print_hi(name):
@@ -44,6 +45,7 @@ def setconfig():
         else:
             return
     elif cfg.arg_command == 'write':
+
         if cfg.arg_filetype == 'conf':
             ret = cf.writeconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value, cfg.arg_delimiters, cfg.arg_space_around_delimiters)
             #return ret
