@@ -1,11 +1,12 @@
 import sys
-from common import fileexists, createfile
+from common import fileexists, createfile, trim
 
 import environment as env
 # from settings import *
 import settings as cfg
 
-data = ""
+#data = ""
+#quote_symbol = ""
 
 def translate_args():
     #-w - t yaml - f "d:\tutswiki.yaml" - p Details2 "domain2" "www.toto.org"
@@ -17,7 +18,7 @@ def translate_args():
     #global arg_value
     #global default_env
 
-    global data
+    #data = ""
 
     Doinit = False
 
@@ -75,9 +76,11 @@ def translate_args():
                 if a + 1 < argcount:
                     if cfg.arg_conffile == "":
                         a = a + 1
-                        data = args[a]
-                        a = argument_workaround(args, a, argcount)
-                        cfg.arg_conffile = data
+                        #data = args[a]
+                        ret = argument_workaround(args, a, argcount)
+                        a = ret[0]
+                        cfg.arg_conffile = ret[1]
+                        #cfg.arg_conffile = data
                         if cfg.arg_conffile == "":
                             return "error: configuration file not specified"
                     else:
@@ -86,9 +89,12 @@ def translate_args():
                 if a + 1 < argcount:
                     if cfg.arg_section_path == "":
                         a = a + 1
-                        data = args[a]
-                        a = argument_workaround(args, a, argcount)
-                        cfg.arg_section_path = data
+                        ret = argument_workaround(args, a, argcount)
+                        a = ret[0]
+                        cfg.arg_section_path = ret[1]
+                        #data = args[a]
+                        #a = argument_workaround(args, a, argcount)
+                        #cfg.arg_section_path = data
                         #pas d'erreur car il peut être vide
                         #if cfg.arg_section_path == "":
                         #    return "error: path of the variable not specified"
@@ -98,18 +104,24 @@ def translate_args():
                 if a + 1 < argcount:
                     if cfg.arg_variable == "":
                         a = a + 1
-                        data = args[a]
-                        a = argument_workaround(args, a, argcount)
-                        cfg.arg_variable = data
+                        ret = argument_workaround(args, a, argcount)
+                        a = ret[0]
+                        cfg.arg_variable = ret[1]
+                        #data = args[a]
+                        #a = argument_workaround(args, a, argcount)
+                        #cfg.arg_variable = data
                     else:
                         return "error: conflicted arguments for variable name"
             elif args[a] == "-v": #value
                 if a + 1 < argcount:
                     if cfg.arg_value == "":
                         a = a + 1
-                        data = args[a]
-                        a = argument_workaround(args, a, argcount)
-                        cfg.arg_value = data
+                        ret = argument_workaround(args, a, argcount)
+                        a = ret[0]
+                        cfg.arg_value = ret[1]
+                        #data = args[a]
+                        #a = argument_workaround(args, a, argcount)
+                        #cfg.arg_value = data
                     else:
                         return "error: conflicted arguments for value"
             #elif args[a] == "-e": #environment variable
@@ -309,22 +321,123 @@ def argument_workaround(arg_list, a, max):
 
     # contournement de bug de lecture des arguments sous linux quand ils comprennent des espaces
 
-    global data
-
+    data = ''
     exit_loop = False
     i = a
     while not exit_loop:
-        i = i + 1
+
         if i < max:
-            ch1 = arg_list[i][0]
-            if ch1 == "-":
+
+            pdata = data
+            ret = concat_arguments(arg_list[i], data)
+            cont = ret[0]
+            data = ret[1]
+
+            if cont:
+                i += 1
+            elif data == pdata:
+                i -= 1
                 exit_loop = True
-                i = i - 1
             else:
-                data = data + ' ' + arg_list[i]
+                exit_loop = True
+
+            #if data == pdata:
+            #    i = i - 1
+            #    exit_loop = True
+            #else:
+            #    pdata = data
+            #    exit_loop = False
+
+
+                #ch1 = arg_list[i][0]
+                #if ch1 == "-":
+                #    exit_loop = True
+                #    i = i - 1
+                #else:
+                #    data = data + ' ' + arg_list[i]
         else:
             exit_loop = True
-            i = i - 1
-    return i
+    return i, data
+
+def concat_arguments(curValue, leftPart):
+
+    #déclaration de variable statique
+    if not hasattr(concat_arguments, "quote_symbol"):
+        concat_arguments.quote_symbol = ""
+
+    #global quote_symbol
+    cont = False
+    _leftPart = leftPart
+    first_char = curValue[0]
+    last_char = curValue[-1]
+    data = ''
+
+    # Cas du début de texte à l'intérieur de quotes
+    if _leftPart == '' and is_quote(first_char):
+        data = curValue
+        concat_arguments.quote_symbol = first_char
+        if last_char == concat_arguments.quote_symbol:
+            data = remove_quotes(data)
+            cont = False
+        else:
+            cont = True
+
+    # cas du dernier élément de la suite cloturant la quote
+    elif last_char == concat_arguments.quote_symbol and concat_arguments.quote_symbol != '':
+        data = remove_quotes(trim(_leftPart + ' ' + curValue))
+        cont = False
+
+    # Cas de la suite de texte à l'intérieur de quotes
+    elif concat_arguments.quote_symbol != '':
+        data = trim(_leftPart + ' ' + curValue)
+        cont = True
+
+    # Cas d'une balise - en dehors des quotes
+    elif first_char == "-":
+        if _leftPart == '':
+            data = curValue
+        else:
+            data = _leftPart
+
+        concat_arguments.quote_symbol = ""
+        cont = False
+
+    #Cas d'une donnée en dehors des quotes
+    else:
+        data = trim(_leftPart + ' ' + curValue)
+        concat_arguments.quote_symbol = ""
+        cont = True
 
 
+    #if _leftPart == '':
+    #    _leftPart = curValue
+
+    #_leftPart = remove_quotes(_leftPart)
+
+    if not cont:
+        concat_arguments.quote_symbol = ""
+
+    return cont, data
+
+def remove_quotes(mystring):
+
+    try:
+        if is_quote(mystring[0]):
+            mystring = mystring[1:]
+
+        if is_quote(mystring[-1]):
+            mystring = mystring[:-1]
+
+        return mystring
+
+    except:
+
+        return mystring
+
+def is_quote(mychar):
+
+
+    if mychar == chr(34) or mychar == chr(39):
+        return True
+    else:
+        return False

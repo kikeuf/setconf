@@ -125,3 +125,8 @@ def getstringafter(mystring, matchstring):
 
     else:
         return ''
+
+def trim(mystring):
+
+    result = re.sub(r'^\s+|\s+$', '', mystring)
+    return result
