@@ -145,7 +145,8 @@ def writeyamlalternate(yamlfile, xpath, variable, value):
         nlines = ret[0]
         match_index = ret[1]
 
-        xlines = yamlupdatevalue(nlines, match_index, xpath + '/' + variable, value)
+        xlines = yamlchangevalue(nlines, xpath + '/' + variable, value)
+        #xlines = yamlupdatevalue(nlines, match_index, xpath + '/' + variable, value)
 
         writelisttofile(yamlfile, xlines)
 
@@ -224,7 +225,7 @@ def sectionexists(filename, section):
 def getdeepersection(yamllines, xpath):
 
     # Set to true to use the index from parent node instead of the current node
-    index_from_parent_node = False
+    index_from_parent_node = True
 
     elements = xpath.split('/')
     # Certains cas de découpage XPATH peuvent provoquer des éléments vides qu'il convient d'éliminer
