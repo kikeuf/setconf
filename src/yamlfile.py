@@ -23,7 +23,7 @@ from dictpath_main import get_dict_item, update_dict_element, write_new_dict_ele
     convertXpathToDictVariable
 from dictpath_utils import validate_dict_path
 from dict import getnodeValuebyXPath, getnodeObjectbyXPath, setnodeValuebyXPath, countnodeListbyXPath
-from common import removeblanklines, writelisttofile, getstringafter
+from common import removeblanklines, writelisttofile, getstringafter, trim, getchar, substring, get_parent_xpath, get_xpath_index, clean_array
 from journal import log
 
 #-------------------------------------------------
@@ -104,6 +104,27 @@ def writeyaml(filename, path, variable, value, new_element=False, new_array_fiel
         log('Setconf error : ' + repr(e))
         return False
 
+def readyamlalternate(yamlfile, xpath, variable):
+
+    try:
+
+        with open(yamlfile, 'r') as file:
+            lines = file.readlines()
+
+        ret = getdeepersection(lines, xpath + '/' + variable)
+        match_index = ret[3]
+
+        if match_index > 0:
+            line = lines[match_index]
+            tag = variable + ':'
+            pos = line.find(tag) + len(tag)
+            text = trim(line[pos:])
+            return text
+        else:
+            return ''
+
+    except:
+        return ''
 
 def writeyamlalternate(yamlfile, xpath, variable, value):
 
@@ -120,9 +141,11 @@ def writeyamlalternate(yamlfile, xpath, variable, value):
             with open(yamlfile, 'r') as file:
                 lines = file.readlines()
 
-        nlines = createsection(lines, xpath, variable, value)
+        ret = createsection(lines, xpath, variable, value)
+        nlines = ret[0]
+        match_index = ret[1]
 
-        xlines = yamlchangevalue(nlines, xpath + '/' + variable, value)
+        xlines = yamlupdatevalue(nlines, match_index, xpath + '/' + variable, value)
 
         writelisttofile(yamlfile, xlines)
 
@@ -153,10 +176,13 @@ def createsection(yamllines, xpath, variable, value):
     idx = ret[0]
     pindent = ret[1]
     valid_path = ret[2]
+    match_index = ret[3]
 
+    #le chemin existe déjà, pas de chemin à créer
     if idx <= 0:
-        return yamllines
+        return yamllines, match_index
 
+    #création du chemin
     missing_path = getstringafter(fpath, valid_path)
     missings = missing_path.split('/')
 
@@ -177,12 +203,12 @@ def createsection(yamllines, xpath, variable, value):
             if cnt == max:
                 yamllines.insert(insert_idx, pindent + missing + ":" + '\n')
                 #yamllines.insert(insert_idx, pindent + missing + ": " + value + '\n')
-                return yamllines
+                return yamllines, 0
             else:
                 yamllines.insert(insert_idx, pindent + missing + ":" + '\n')
                 idx = insert_idx + 1
 
-    return yamllines
+    return yamllines, 0
 def sectionexists(filename, section):
     try:
         with open(filename, "r") as yamlfile:
@@ -197,7 +223,13 @@ def sectionexists(filename, section):
         return False
 def getdeepersection(yamllines, xpath):
 
+    # Set to true to use the index from parent node instead of the current node
+    index_from_parent_node = False
+
     elements = xpath.split('/')
+    # Certains cas de découpage XPATH peuvent provoquer des éléments vides qu'il convient d'éliminer
+    elements = clean_array(elements)
+
     i = 0
     max = len(elements)
     line_count = 0
@@ -205,28 +237,71 @@ def getdeepersection(yamllines, xpath):
     pindent = ''
     pindent_len = 0
     valid_path = ''
-
+    is_list = False
+    cidx = 0
+    index = 0
+    m_index = 0
+    element = ''
+    new_element = True
 
     for line in yamllines:
         line_count += 1
-        if elements[i] == '':
-            i += 1
-        el = elements[i] + ":"
-        pos = line.find(el)
-        cindent = getindent(line)
-        cindent_len = len(cindent)
-        if cindent_len <= pindent_len and valid_path != '' and pindent_len != 0:
-            return insert_line, pindent, valid_path
-        elif pos != -1:
-            valid_path += '/' + elements[i]
-            pindent = cindent
-            pindent_len = cindent_len
-            insert_line = line_count
-            i += 1
-            if i == max:
-                return 0, pindent, valid_path
 
-    return insert_line, pindent, valid_path
+        if new_element:
+
+            if index_from_parent_node:
+                index = m_index
+
+            cidx = 0
+            new_element = False
+
+            #Séparation du nom de la balise et de l'index entre crochets
+            ret = get_xpath_index(elements[i])
+            if index_from_parent_node:
+                m_index = ret[0]
+            else:
+                index = ret[0]
+            element = ret[1]
+
+
+        #On ignore les lignes vides et les commentaires pour éviter des problèmes de mauvaise indentation
+        xline = trim(line)
+        if xline != '' and getchar(xline, 0) != "#":
+
+            #Détection d'une liste sous la variable (dernier tag du XPATH)
+            if i + 1 == max and substring(xline, 0, 2) == '- ':
+                if is_list:
+                    cidx += 1
+                is_list = True
+
+            el_l = '- ' + element + ":"
+            el = element + ":"
+
+            #La ligne commence par le nom du tag ou si c'est le dernier élément la ligne commence par un tiret puis le nom du tag (cas de la liste)
+            if substring(xline, 0, len(el)) == el or (is_list and substring(xline, 0, len(el_l)) == el_l):
+                if cidx != index:
+                    pos = -1
+                    if not is_list:
+                        cidx += 1
+                else:
+                    pos = 1
+            else:
+                pos = -1
+            cindent = getindent(line, is_list)
+            cindent_len = len(cindent)
+            if cindent_len <= pindent_len and valid_path != '' and pindent_len != 0:
+                return insert_line, pindent, valid_path, 0
+            elif pos != -1:
+                valid_path += '/' + element
+                pindent = cindent
+                pindent_len = cindent_len
+                insert_line = line_count
+                i += 1
+                new_element = True
+                if i == max:
+                    return 0, pindent, valid_path, insert_line - 1
+
+    return insert_line, pindent, valid_path, 0
 
 def descriptLines(Lines):
 
@@ -255,6 +330,25 @@ def getLastLineindented(lines, start_idx, indent_len):
 
     return idx_line
 
+
+def yamlupdatevalue(yamllines, index, xpath, value):
+
+
+    line = yamllines[index]
+    pos = line.find(":")
+
+    if pos > 0:
+        old_value = trim(line[pos + 1:])
+    else:
+        old_value = ''
+
+    if index == 0 or value[0:2] == '- ' or old_value == '' or old_value == "|":
+        nlines = yamlchangevalue(yamllines, xpath, value)
+        return nlines
+    else:
+        line = line[0:pos+1] + ' ' + value
+        yamllines[index] = line + chr(10)
+        return yamllines
 
 
 def yamlchangevalue(yamllines, xpath, value):
@@ -411,16 +505,27 @@ def countlistlines(lines, index):
     except:
         return -1
 
-def getindent(mystring):
+def getindent(mystring, include_list_shift = False):
 
     idt = ''
-    for ch in mystring:
-        if ch == ' ':
-            idt += ' '
-        else:
-            return idt
+    try:
 
-    return idt
+        i = 0
+        for ch in mystring:
+            if ch == ' ':
+                idt += ' '
+            else:
+                #cas de la liste
+                if ch == "-" and include_list_shift:
+                    if (getchar(mystring, i+1) == " ") and (getchar(mystring, i+2) not in [' ', '-', '']):
+                        return idt + '  '
+                return idt
+            i += 1
+
+        return idt
+
+    except:
+        return idt
 
 #-------------------------------------------------
 # Test and archived functions
@@ -505,7 +610,6 @@ def yamlchangevalue_sav(yamllines, xpath, value):
                     nline = line
 
                 elif rvalue != '':
-                    print(el)
                     if rvalue[0:1] == '-':
                         xvalue = autoCRLF(rvalue, indent + shift_indent, False)
                         mvalue = '\n' + xvalue[0]
@@ -516,8 +620,6 @@ def yamlchangevalue_sav(yamllines, xpath, value):
                     nline = indent + el + ' ' + mvalue
 
                 elif lst_ret[0] > 0:
-                    print(value)
-                    print(line_count)
                     xvalue = autoCRLF(rvalue, indent + shift_indent, False)
                     mvalue = '\n' + xvalue[0]
 

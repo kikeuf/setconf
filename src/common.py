@@ -130,3 +130,76 @@ def trim(mystring):
 
     result = re.sub(r'^\s+|\s+$', '', mystring)
     return result
+
+def getchar(mystring, index):
+
+    try:
+        ch = mystring[index]
+        return ch
+    except:
+        return ''
+
+def substring(mystring, start, end):
+
+    try:
+        xstr = mystring[start:end]
+        return xstr
+    except:
+        return ''
+
+def clean_array(myarray):
+
+    try:
+
+        arr1 = []  # initialization
+        for ar in myarray:
+            if ar != '':
+                arr1.append(ar)
+
+        return arr1
+
+    except:
+        return myarray
+
+#-------------------------------------------------
+# XPATH manipulations
+#-------------------------------------------------
+def get_xpath_index(xpath):
+
+    try:
+
+        if xpath[-1] == ']':
+            le = len(xpath)
+            for x in range(1, le-1):
+                y = le-x
+                ch = getchar(xpath, y)
+                if ch == "[":
+                    val = substring(xpath, y+1, le-1)
+                    n_xpath = substring(xpath, 0, y)
+                    if isnumber(val):
+                        return int(val), n_xpath
+                    break
+        return 0, xpath
+
+    except:
+        return 0, xpath
+
+def get_parent_xpath(xpath):
+
+    try:
+
+        le = len(xpath)
+        for x in range(1, le - 1):
+            y = le - x
+            ch = getchar(xpath, y)
+            if ch == "/":
+                val = substring(xpath, 0, y)
+                val2 = substring(xpath, y+1, le)
+                return val, val2
+                break
+
+        return '', xpath
+
+    except:
+
+        return '', xpath

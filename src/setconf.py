@@ -12,6 +12,7 @@ import dhcpfile as df
 from arguments import translate_args
 #from dict import testdict
 
+from common import substring
 
 
 #def print_hi(name):
@@ -29,13 +30,15 @@ def setconfig():
         if cfg.arg_filetype == 'conf':
             value = cf.readconf(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
             return value
-        elif cfg.arg_filetype == 'yaml' or cfg.arg_filetype == 'yaml2':
-            if cfg.arg_action == 'count':
-                value = yf.countyamlelements(cfg.arg_conffile, cfg.arg_section_path)
-                return value
-            else:
-                value = yf.readyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
-                return value
+        elif substring(cfg.arg_filetype, 0, 4) == 'yaml' and cfg.arg_action == 'count':
+            value = yf.countyamlelements(cfg.arg_conffile, cfg.arg_section_path)
+            return value
+        elif cfg.arg_filetype == 'yaml':
+            value = yf.readyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
+            return value
+        elif cfg.arg_filetype == 'yaml2':
+            value = yf.readyamlalternate(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
+            return value
         elif cfg.arg_filetype == 'xml':
             value = xf.readxml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
             return value
@@ -109,7 +112,7 @@ def setconfig_new():
                 value = yf.countyamlelements(cfg.arg_conffile, cfg.arg_section_path)
                 return value
             elif cfg.arg_command == 'read':
-                value = yf.readyaml(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
+                value = yf.readyamlalternate(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable)
                 return value
             elif cfg.arg_command in ['write', 'update', 'append']:
                 ret = yf.writeyamlalternate(cfg.arg_conffile, cfg.arg_section_path, cfg.arg_variable, cfg.arg_value)
@@ -178,6 +181,7 @@ if __name__ == '__main__':
 
     #testdict()
     #cfg.init()
+
 
     ret = translate_args()
     #cfg.print_args()
