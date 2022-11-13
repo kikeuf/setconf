@@ -145,8 +145,8 @@ def writeyamlalternate(yamlfile, xpath, variable, value):
         nlines = ret[0]
         match_index = ret[1]
 
-        xlines = yamlchangevalue(nlines, xpath + '/' + variable, value)
-        #xlines = yamlupdatevalue(nlines, match_index, xpath + '/' + variable, value)
+        #xlines = yamlchangevalue(nlines, xpath + '/' + variable, value)
+        xlines = yamlupdatevalue(nlines, match_index, xpath + '/' + variable, value)
 
         writelisttofile(yamlfile, xlines)
 
@@ -232,6 +232,7 @@ def getdeepersection(yamllines, xpath):
     elements = clean_array(elements)
 
     i = 0
+    found = False
     max = len(elements)
     line_count = 0
     insert_line = -1
@@ -269,17 +270,23 @@ def getdeepersection(yamllines, xpath):
         xline = trim(line)
         if xline != '' and getchar(xline, 0) != "#":
 
+            el_l = '- ' + element + ":"
+            el = element + ":"
+
             #Détection d'une liste sous la variable (dernier tag du XPATH)
             if i + 1 == max and substring(xline, 0, 2) == '- ':
                 if is_list:
                     cidx += 1
-                is_list = True
+                if substring(xline, 0, len(el_l)) == el_l:
+                    found = True
+                    is_list = True
 
-            el_l = '- ' + element + ":"
-            el = element + ":"
+            elif substring(xline, 0, len(el)) == el:
+                found = True
 
             #La ligne commence par le nom du tag ou si c'est le dernier élément la ligne commence par un tiret puis le nom du tag (cas de la liste)
-            if substring(xline, 0, len(el)) == el or (is_list and substring(xline, 0, len(el_l)) == el_l):
+            if found:
+                found = False
                 if cidx != index:
                     pos = -1
                     if not is_list:
@@ -288,6 +295,7 @@ def getdeepersection(yamllines, xpath):
                     pos = 1
             else:
                 pos = -1
+
             cindent = getindent(line, is_list)
             cindent_len = len(cindent)
             if cindent_len <= pindent_len and valid_path != '' and pindent_len != 0:
