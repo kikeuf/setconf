@@ -147,6 +147,18 @@ def substring(mystring, start, end):
     except:
         return ''
 
+def removeCRLF(mystring):
+
+    try:
+
+        if mystring[-1] == chr(10):
+            return mystring[0:-1]
+        else:
+            return mystring
+
+    except:
+        return mystring
+
 def clean_array(myarray):
 
     try:
@@ -160,6 +172,18 @@ def clean_array(myarray):
 
     except:
         return myarray
+
+def array_to_text(array, index = 0):
+
+    i = 0
+    xstr = ''
+    for ar in array:
+        if i >= index:
+               xstr += ar  #removeCRLF(ar) + '\n'
+        i += 1
+
+    return xstr
+
 
 #-------------------------------------------------
 # XPATH manipulations

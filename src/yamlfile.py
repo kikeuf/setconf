@@ -23,7 +23,7 @@ from dictpath_main import get_dict_item, update_dict_element, write_new_dict_ele
     convertXpathToDictVariable
 from dictpath_utils import validate_dict_path
 from dict import getnodeValuebyXPath, getnodeObjectbyXPath, setnodeValuebyXPath, countnodeListbyXPath
-from common import removeblanklines, writelisttofile, getstringafter, trim, getchar, substring, get_parent_xpath, get_xpath_index, clean_array
+from common import removeblanklines, writelisttofile, getstringafter, trim, getchar, substring, get_parent_xpath, get_xpath_index, clean_array, array_to_text
 from journal import log
 
 #-------------------------------------------------
@@ -113,13 +113,21 @@ def readyamlalternate(yamlfile, xpath, variable):
 
         ret = getdeepersection(lines, xpath + '/' + variable)
         match_index = ret[3]
+        var_lines = ret[4]
+
+        rstr = ''
+        if len(var_lines) > 1:
+            rstr = array_to_text(var_lines, 1)
 
         if match_index > 0:
             line = lines[match_index]
             tag = variable + ':'
             pos = line.find(tag) + len(tag)
             text = trim(line[pos:])
-            return text
+            if text == '' or text == "|":
+                return rstr
+            else:
+                return text
         else:
             return ''
 
@@ -299,7 +307,7 @@ def getdeepersection(yamllines, xpath):
             cindent = getindent(line, is_list)
             cindent_len = len(cindent)
             if cindent_len <= pindent_len and valid_path != '' and pindent_len != 0:
-                return insert_line, pindent, valid_path, 0
+                return insert_line, pindent, valid_path, 0, None
             elif pos != -1:
                 valid_path += '/' + element
                 pindent = cindent
@@ -308,9 +316,26 @@ def getdeepersection(yamllines, xpath):
                 i += 1
                 new_element = True
                 if i == max:
-                    return 0, pindent, valid_path, insert_line - 1
+                    arr = get_variable_bloc(yamllines, insert_line - 1, cindent_len)
+                    return 0, pindent, valid_path, insert_line - 1, arr
 
-    return insert_line, pindent, valid_path, 0
+    return insert_line, pindent, valid_path, 0, None
+
+def get_variable_bloc(lines, index, indent):
+
+    max = len(lines)
+    i = index
+    nindent = indent + 2
+    arr1 = []  # initialization
+
+    while nindent > indent and i < max:
+        #print(lines[i])
+        arr1.append(lines[i])
+        i += 1
+        if i < max:
+            nindent = len(getindent(lines[i], True))
+
+    return arr1
 
 def descriptLines(Lines):
 
